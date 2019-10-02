@@ -235,8 +235,8 @@ class Connector extends BasicConnector {
                     handler: content.getPost,
                     scope: content,
                 },
-                'content.getFeed': {
-                    handler: content.getFeed,
+                'content.getPosts': {
+                    handler: content.getPosts,
                     scope: content,
                 },
                 'content.getProfile': {

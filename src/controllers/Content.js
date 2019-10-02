@@ -1,240 +1,104 @@
 const core = require('gls-core-service');
-const Basic = core.controllers.Basic;
+const { Basic } = core.controllers;
 
 class Content extends Basic {
-    async getComments({
-        auth: { user: currentUserId },
-        params: {
-            sortBy,
-            sequenceKey,
-            limit,
-            userId: requestedUserId,
-            user,
-            permlink,
-            refBlockNum,
-            type,
-            contentType,
-            app,
-        },
-    }) {
-        const data = {
-            sortBy,
-            sequenceKey,
-            limit,
-            requestedUserId,
-            user,
+    async getComments({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getComments', {
+            ...params,
             currentUserId,
-            permlink,
-            refBlockNum,
-            type,
-            contentType,
-            app,
-        };
-
-        return await this.callService('prismApi', 'getComments', data);
+        });
     }
 
-    async getPost({
-        auth: { user: currentUserId },
-        params: {
-            userId: requestedUserId,
-            permlink,
-            refBlockNum,
-            contentType,
-            username,
-            user,
-            app,
-        },
-    }) {
-        const data = {
+    async getPost({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getPost', {
+            ...params,
             currentUserId,
-            requestedUserId,
-            permlink,
-            refBlockNum,
-            contentType,
-            username,
-            user,
-            app,
-        };
-
-        return await this.callService('prismApi', 'getPost', data);
+        });
     }
 
-    async getComment({
-        auth: { user: currentUserId },
-        params: {
-            userId: requestedUserId,
-            permlink,
-            refBlockNum,
-            contentType,
-            username,
-            user,
-            app,
-        },
-    }) {
-        const data = {
+    async getComment({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getComment', {
+            ...params,
             currentUserId,
-            requestedUserId,
-            permlink,
-            refBlockNum,
-            contentType,
-            username,
-            user,
-            app,
-        };
-
-        return await this.callService('prismApi', 'getComment', data);
+        });
     }
 
-    async getFeed({
-        auth: { user: currentUserId },
-        params: {
-            type,
-            sortBy,
-            sequenceKey,
-            limit,
-            userId: requestedUserId,
-            communityId,
-            timeframe,
-            tags,
-            contentType,
-            username,
-            app,
-        },
-    }) {
-        const data = {
-            type,
-            sortBy,
-            sequenceKey,
-            limit,
+    async getPosts({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getPosts', {
+            ...params,
             currentUserId,
-            requestedUserId,
-            communityId,
-            timeframe,
-            tags,
-            contentType,
-            username,
-            app,
-        };
-
-        return await this.callService('prismApi', 'getFeed', data);
+        });
     }
 
-    async getProfile({
-        auth: { user: currentUserId },
-        params: { userId: requestedUserId, type, username, user, app },
-    }) {
-        const data = { currentUserId, requestedUserId, type, username, user, app };
-
-        return await this.callService('prismApi', 'getProfile', data);
+    async getProfile({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getProfile', {
+            ...params,
+            currentUserId,
+        });
     }
 
     async suggestNames({ params }) {
         return await this.callService('prismApi', 'suggestNames', params);
     }
 
-    async getChargers({ params: { userId } }) {
-        const data = { userId };
-
-        return await this.callService('prismApi', 'getChargers', data);
+    async getChargers({ params }) {
+        return await this.callService('prismApi', 'getChargers', params);
     }
 
-    async getHashTagTop({ params: { communityId, limit, sequenceKey } }) {
-        const data = { communityId, limit, sequenceKey };
-
-        return await this.callService('prismApi', 'getHashTagTop', data);
+    async getHashTagTop({ params }) {
+        return await this.callService('prismApi', 'getHashTagTop', params);
     }
 
     async getLeadersTop({ auth: { user: currentUserId }, params }) {
         return await this.callService('prismApi', 'getLeadersTop', { ...params, currentUserId });
     }
 
-    async waitForBlock({ params: { blockNum } }) {
-        const data = { blockNum };
-
-        return await this.callService('prism', 'waitForBlock', data);
+    async waitForBlock({ params }) {
+        return await this.callService('prism', 'waitForBlock', params);
     }
 
-    async waitForTransaction({ params: { transactionId } }) {
-        const data = { transactionId };
-
-        return await this.callService('prism', 'waitForTransaction', data);
+    async waitForTransaction({ params }) {
+        return await this.callService('prism', 'waitForTransaction', params);
     }
 
-    async search({ params: { where, text, field, limit, offset, type } }) {
-        const data = { where, text, field, limit, offset, type };
-
-        return await this.callService('search', 'search', data);
+    async search({ params }) {
+        return await this.callService('search', 'search', params);
     }
 
-    async getPostVotes({
-        params: { userId: requestedUserId, permlink, type, sequenceKey, limit, app },
-        auth,
-    }) {
-        const data = {
-            requestedUserId,
-            permlink,
-            type,
-            sequenceKey,
-            limit,
-            app,
-        };
-
-        if (auth && auth.user) {
-            data.currentUserId = auth.user;
-        }
-
-        return await this.callService('prismApi', 'getPostVotes', data);
+    async getPostVotes({ auth: { currentUserId }, params }) {
+        return await this.callService('prismApi', 'getPostVotes', {
+            ...params,
+            currentUserId,
+        });
     }
 
-    async getCommentVotes({
-        params: { userId: requestedUserId, permlink, type, sequenceKey, limit, app },
-        auth,
-    }) {
-        const data = {
-            requestedUserId,
-            permlink,
-            type,
-            sequenceKey,
-            limit,
-            app,
-        };
-
-        if (auth && auth.user) {
-            data.currentUserId = auth.user;
-        }
-
-        return await this.callService('prismApi', 'getCommentVotes', data);
+    async getCommentVotes({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getCommentVotes', {
+            ...params,
+            currentUserId,
+        });
     }
 
-    async resolveProfile({ params: { username, app } }) {
-        const data = { username, app };
-
-        return await this.callService('prismApi', 'resolveProfile', data);
+    async resolveProfile({ params }) {
+        return await this.callService('prismApi', 'resolveProfile', params);
     }
 
-    async getSubscriptions({
-        auth: { user: currentUserId },
-        params: { userId: requestedUserId, limit, sequenceKey, type, app },
-    }) {
-        const data = { currentUserId, requestedUserId, limit, sequenceKey, type, app };
-
-        return await this.callService('prismApi', 'getSubscriptions', data);
+    async getSubscriptions({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getSubscriptions', {
+            ...params,
+            currentUserId,
+        });
     }
 
-    async getSubscribers({
-        auth: { user: currentUserId },
-        params: { userId: requestedUserId, limit, sequenceKey, type, app },
-    }) {
-        const data = { currentUserId, requestedUserId, limit, sequenceKey, type, app };
-
-        return await this.callService('prismApi', 'getSubscribers', data);
+    async getSubscribers({ auth: { user: currentUserId }, params }) {
+        return await this.callService('prismApi', 'getSubscribers', {
+            ...params,
+            currentUserId,
+        });
     }
 
-    async getProposals({ params: { communityId, limit, sequenceKey, app } }) {
-        const data = { communityId, limit, sequenceKey, app };
-
-        return await this.callService('prismApi', 'getProposals', data);
+    async getProposals({ params }) {
+        return await this.callService('prismApi', 'getProposals', params);
     }
 
     async getProposal({ params }) {
