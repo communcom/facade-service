@@ -1,4 +1,4 @@
-const core = require('gls-core-service');
+const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
 const Options = require('../controllers/Options');
@@ -223,94 +223,30 @@ class Connector extends BasicConnector {
                     handler: rates.getHistoricalMulti,
                     scope: rates,
                 },
-                'content.getComment': {
-                    handler: content.getComment,
-                    scope: content,
-                },
-                'content.getComments': {
-                    handler: content.getComments,
-                    scope: content,
-                },
-                'content.getPost': {
-                    handler: content.getPost,
-                    scope: content,
-                },
-                'content.getPosts': {
-                    handler: content.getPosts,
-                    scope: content,
-                },
-                'content.getProfile': {
-                    handler: content.getProfile,
-                    scope: content,
-                },
-                'content.suggestNames': {
-                    handler: content.suggestNames,
-                    scope: content,
-                },
-                'content.getChargers': {
-                    handler: content.getChargers,
-                    scope: content,
-                },
-                'content.getLeadersTop': {
-                    handler: content.getLeadersTop,
-                    scope: content,
-                },
-                'content.getHashTagTop': {
-                    handler: content.getHashTagTop,
-                    scope: content,
-                },
-                'content.waitForBlock': {
-                    handler: content.waitForBlock,
-                    scope: content,
-                },
-                'content.waitForTransaction': {
-                    handler: content.waitForTransaction,
-                    scope: content,
-                },
-                'content.search': {
-                    handler: content.search,
-                    scope: content,
-                },
-                'content.getPostVotes': {
-                    handler: content.getPostVotes,
-                    scope: content,
-                },
-                'content.getCommentVotes': {
-                    handler: content.getCommentVotes,
-                    scope: content,
-                },
-                'content.resolveProfile': {
-                    handler: content.resolveProfile,
-                    scope: content,
-                },
-                'content.getSubscriptions': {
-                    handler: content.getSubscriptions,
-                    scope: content,
-                },
-                'content.getSubscribers': {
-                    handler: content.getSubscribers,
-                    scope: content,
-                },
-                'content.getProposals': {
-                    handler: content.getProposals,
-                    scope: content,
-                },
-                'content.getProposal': {
-                    handler: content.getProposal,
-                    scope: content,
-                },
-                'content.getHeaders': {
-                    handler: content.getHeaders,
-                    scope: content,
-                },
-                'content.getNotifyMeta': {
-                    handler: content.getNotifyMeta,
-                    scope: content,
-                },
-                'content.getCommunitySettings': {
-                    handler: content.getCommunitySettings,
-                    scope: content,
-                },
+
+                'content.getComment': content.createCallProxy('getComment'),
+                'content.getComments': content.createCallProxy('getComments'),
+                'content.getPost': content.createCallProxy('getPost'),
+                'content.getPosts': content.createCallProxy('getPosts'),
+                'content.getProfile': content.createCallProxy('getProfile'),
+                'content.suggestNames': content.createCallProxy('suggestNames'),
+                'content.getChargers': content.createCallProxy('getChargers'),
+                'content.getLeadersTop': content.createCallProxy('getLeadersTop'),
+                'content.getHashTagTop': content.createCallProxy('getHashTagTop'),
+                'content.waitForBlock': content.createCallProxy('waitForBlock'),
+                'content.waitForTransaction': content.createCallProxy('waitForTransaction'),
+                'content.search': content.createCallProxy('search'),
+                'content.getPostVotes': content.createCallProxy('getPostVotes'),
+                'content.getCommentVotes': content.createCallProxy('getCommentVotes'),
+                'content.resolveProfile': content.createCallProxy('resolveProfile'),
+                'content.getSubscriptions': content.createCallProxy('getSubscriptions'),
+                'content.getSubscribers': content.createCallProxy('getSubscribers'),
+                'content.getProposals': content.createCallProxy('getProposals'),
+                'content.getProposal': content.createCallProxy('getProposal'),
+                'content.getHeaders': content.createCallProxy('getHeaders'),
+                'content.getNotifyMeta': content.createCallProxy('getNotifyMeta'),
+                'content.getCommunitySettings': content.createCallProxy('getCommunitySettings'),
+
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
                     scope: meta,

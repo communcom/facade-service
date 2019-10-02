@@ -1,4 +1,4 @@
-const core = require('gls-core-service');
+const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
 
 class Transfer extends Basic {

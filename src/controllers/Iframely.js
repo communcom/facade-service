@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const urlValidator = require('valid-url');
-const core = require('gls-core-service');
+const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
 const Logger = core.utils.Logger;
 const env = require('../data/env');
