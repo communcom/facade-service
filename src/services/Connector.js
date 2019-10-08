@@ -247,7 +247,7 @@ class Connector extends BasicConnector {
                 'content.getNotifyMeta': content.createCallProxy('getNotifyMeta'),
                 'content.getCommunitySettings': content.createCallProxy('getCommunitySettings'),
                 'content.getCommunity': content.createCallProxy('getCommunity'),
-                'content.getCommunitiesList': content.createCallProxy('getCommunitiesList'),
+                'content.getCommunities': content.createCallProxy('getCommunities'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
