@@ -4,65 +4,65 @@ const Basic = core.controllers.Basic;
 class History extends Basic {
     async notify({
         auth: { user },
-        params: { app, fromId, limit, types, markAsViewed = true, freshOnly },
+        params: { fromId, limit, types, markAsViewed = true, freshOnly },
     }) {
-        const data = { user, app, fromId, limit, types, markAsViewed, freshOnly };
+        const data = { user, fromId, limit, types, markAsViewed, freshOnly };
 
         return await this.callService('notify', 'history', data);
     }
 
-    async notifyFresh({ auth: { user }, params: { app } }) {
-        return await this.callService('notify', 'historyFresh', { user, app });
+    async notifyFresh({ auth: { user } }) {
+        return await this.callService('notify', 'historyFresh', { user });
     }
 
     async onlineNotify({
         auth: { user },
-        params: { app, fromId, limit, markAsViewed = true, freshOnly },
+        params: { fromId, limit, markAsViewed = true, freshOnly },
     }) {
-        const data = { user, app, fromId, limit, markAsViewed, freshOnly };
+        const data = { user, fromId, limit, markAsViewed, freshOnly };
 
         return await this.callService('onlineNotify', 'history', data);
     }
 
-    async onlineNotifyFresh({ auth: { user }, params: { app } }) {
-        return await this.callService('onlineNotify', 'historyFresh', { user, app });
+    async onlineNotifyFresh({ auth: { user } }) {
+        return await this.callService('onlineNotify', 'historyFresh', { user });
     }
 
     async push({
         auth: { user },
-        params: { app, profile, afterId, limit, types, markAsViewed = true, freshOnly },
+        params: { profile, afterId, limit, types, markAsViewed = true, freshOnly },
     }) {
-        const data = { user, app, profile, afterId, limit, types, markAsViewed, freshOnly };
+        const data = { user, profile, afterId, limit, types, markAsViewed, freshOnly };
 
         return await this.callService('push', 'history', data);
     }
 
-    async pushFresh({ auth: { user }, params: { app, profile } }) {
-        const data = { user, app, profile };
+    async pushFresh({ auth: { user }, params: { profile } }) {
+        const data = { user, profile };
 
         return await this.callService('push', 'historyFresh', data);
     }
 
-    async markAsViewed({ auth: { user }, params: { app, ids } }) {
-        const data = { user, app, ids };
+    async markAsViewed({ auth: { user }, params: { ids } }) {
+        const data = { user, ids };
 
         return await this.callService('notify', 'markAsViewed', data);
     }
 
-    async markAllAsViewed({ auth: { user }, params: { app } }) {
-        const data = { user, app };
+    async markAllAsViewed({ auth: { user } }) {
+        const data = { user };
 
         return await this.callService('notify', 'markAllAsViewed', data);
     }
 
-    async markAsRead({ auth: { user }, params: { app, ids } }) {
-        const data = { user, app, ids };
+    async markAsRead({ auth: { user }, params: { ids } }) {
+        const data = { user, ids };
 
         return await this.callService('notify', 'markAsRead', data);
     }
 
-    async markAllAsRead({ auth: { user }, params: { app } }) {
-        const data = { user, app };
+    async markAllAsRead({ auth: { user } }) {
+        const data = { user };
 
         return await this.callService('notify', 'markAllAsRead', data);
     }
