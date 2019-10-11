@@ -2,26 +2,26 @@ const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
 
 class Subscribe extends Basic {
-    async onlineNotifyOn({ auth: { user }, routing: { channelId }, params: { app } }) {
-        const data = { user, app, channelId };
+    async onlineNotifyOn({ auth: { user }, routing: { channelId } }) {
+        const data = { user, channelId };
 
         return await this.callService('onlineNotify', 'subscribe', data);
     }
 
-    async onlineNotifyOff({ auth: { user }, routing: { channelId }, params: { app } }) {
-        const data = { user, app, channelId };
+    async onlineNotifyOff({ auth: { user }, routing: { channelId } }) {
+        const data = { user, channelId };
 
         return await this.callService('onlineNotify', 'unsubscribe', data);
     }
 
-    async pushNotifyOn({ auth: { user }, params: { app, key, profile } }) {
-        const data = { user, app, key, profile };
+    async pushNotifyOn({ auth: { user }, params: { key, profile } }) {
+        const data = { user, key, profile };
 
         return await this.callService('push', 'notifyOn', data);
     }
 
-    async pushNotifyOff({ auth: { user }, params: { app, key, profile } }) {
-        const data = { user, app, key, profile };
+    async pushNotifyOff({ auth: { user }, params: { key, profile } }) {
+        const data = { user, key, profile };
 
         return await this.callService('push', 'notifyOff', data);
     }
