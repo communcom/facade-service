@@ -1,130 +1,73 @@
 const core = require('cyberway-core-service');
-const Basic = core.controllers.Basic;
+const { Basic } = core.controllers;
 
 class Options extends Basic {
-    async get({ auth: { user }, params: { profile } }) {
-        const basic = await this._tryGetOptionsBy({
-            service: 'options',
-            method: 'get',
-            errorPrefix: 'Basic',
-            data: { user, profile },
-        });
-
-        const notify = await this._tryGetOptionsBy({
-            service: 'onlineNotify',
-            method: 'getOptions',
-            errorPrefix: 'Notify',
-            data: { user },
-        });
-
-        const push = await this._tryGetOptionsBy({
-            service: 'push',
-            method: 'getOptions',
-            errorPrefix: 'Push',
-            data: { user, profile },
-        });
+    async get({ auth: { user: userId }, params: { profile } }) {
+        const [basic, notify, push] = await Promise.all([
+            this.callService('options', 'get', { userId, profile }),
+            // TODO: Not enabled while MVP:
+            // this.callService('onlineNotify', 'getOptions', { user: userId }),
+            // this.callService('push', 'getOptions', { user: userId, profile }),
+        ]);
 
         return { basic, notify, push };
     }
 
-    async set({ auth: { user }, params: { profile, basic, notify, push } }) {
-        const errors = [];
-        const trySetOptionsBy = this._makeOptionsSetter({ user, errors });
+    async set({ auth: { userId }, params: { profile, basic, notify, push } }) {
+        const promises = [];
 
         if (basic) {
-            await trySetOptionsBy({
-                data: basic,
-                service: 'options',
-                method: 'set',
-                errorPrefix: 'Basic',
-                params: {
-                    profile,
-                },
-            });
+            promises.push(this.callService('options', 'set', { userId, profile, data: basic }));
         }
 
-        if (notify) {
-            await trySetOptionsBy({
-                data: notify,
-                service: 'onlineNotify',
-                method: 'setOptions',
-                errorPrefix: 'Notify',
-            });
+        if (basic) {
+            promises.push(this.callService('onlineNotify', 'setOptions', { userId, data: notify }));
         }
 
         if (push) {
-            await trySetOptionsBy({
-                data: push,
-                service: 'push',
-                method: 'setOptions',
-                errorPrefix: 'Push',
-                params: {
-                    profile,
-                },
-            });
+            promises.push(this.callService('push', 'setOptions', { userId, profile, data: push }));
         }
+
+        const errors = [];
+
+        await Promise.all(
+            promises.map(promise =>
+                promise.catch(err => {
+                    errors.push(err);
+                })
+            )
+        );
 
         if (errors.length) {
-            throw { code: 500, message: `Some options not changed - ${errors.join(' | ')}` };
+            throw {
+                code: 500,
+                message: `Some options not changed - ${errors.join(', ')}`,
+            };
         }
     }
 
-    async getFavorites({ auth: { user } }) {
-        const data = { user };
-
-        return await this.callService('options', 'getFavorites', data);
+    async getFavorites({ auth: { user: userId } }) {
+        return await this.callService('options', 'getFavorites', { userId });
     }
 
-    async addFavorite({ auth: { user }, params: { permlink } }) {
-        const data = { user, permlink };
-
-        return await this.callService('options', 'addFavorite', data);
+    async addFavorite({ auth: { user: userId }, params: { permlink } }) {
+        return await this.callService('options', 'addFavorite', { userId, permlink });
     }
 
-    async removeFavorite({ auth: { user }, params: { permlink } }) {
-        const data = { user, permlink };
-
-        return await this.callService('options', 'removeFavorite', data);
+    async removeFavorite({ auth: { user: userId }, params: { permlink } }) {
+        return await this.callService('options', 'removeFavorite', { userId, permlink });
     }
 
     async getBlackList({ auth: { user: owner } }) {
-        const data = { owner };
-
-        return await this.callService('notify', 'getBlackList', data);
+        return await this.callService('notify', 'getBlackList', { owner });
     }
 
     async addToBlackList({ auth: { user: owner }, params: { banned } }) {
-        const data = { owner, banned };
-
-        return await this.callService('notify', 'addToBlackList', data);
+        return await this.callService('notify', 'addToBlackList', { owner, banned });
     }
 
     async removeFromBlackList({ auth: { user: owner }, params: { banned } }) {
-        const data = { owner, banned };
-
-        return await this.callService('notify', 'removeFromBlackList', data);
-    }
-
-    async _tryGetOptionsBy({ service, method, errorPrefix, data }) {
-        try {
-            return await this.callService(service, method, data);
-        } catch (error) {
-            throw this._makeGetError(error, errorPrefix);
-        }
-    }
-
-    _makeGetError(error, prefix) {
-        return { code: error.code, message: `${prefix} -> ${error.message}` };
-    }
-
-    _makeOptionsSetter({ user, errors }) {
-        return async ({ service, method, errorPrefix, data, params }) => {
-            const { error } = await this.sendTo(service, method, { user, data, ...params });
-
-            if (error) {
-                errors.push(`${errorPrefix} -> ${error.message}`);
-            }
-        };
+        return await this.callService('notify', 'removeFromBlackList', { owner, banned });
     }
 }
 
