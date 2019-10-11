@@ -20,7 +20,7 @@ class Options extends Basic {
             promises.push(this.callService('options', 'set', { userId, profile, data: basic }));
         }
 
-        if (basic) {
+        if (notify) {
             promises.push(this.callService('onlineNotify', 'setOptions', { userId, data: notify }));
         }
 
