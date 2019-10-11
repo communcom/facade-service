@@ -2,7 +2,7 @@ const core = require('cyberway-core-service');
 const { Basic } = core.controllers;
 
 class Options extends Basic {
-    async get({ auth: { user: userId }, params: { profile } }) {
+    async get({ auth: { userId }, params: { profile } }) {
         const [basic, notify, push] = await Promise.all([
             this.callService('options', 'get', { userId, profile }),
             // TODO: Not enabled while MVP:
@@ -46,27 +46,27 @@ class Options extends Basic {
         }
     }
 
-    async getFavorites({ auth: { user: userId } }) {
+    async getFavorites({ auth: { userId } }) {
         return await this.callService('options', 'getFavorites', { userId });
     }
 
-    async addFavorite({ auth: { user: userId }, params: { permlink } }) {
+    async addFavorite({ auth: { userId }, params: { permlink } }) {
         return await this.callService('options', 'addFavorite', { userId, permlink });
     }
 
-    async removeFavorite({ auth: { user: userId }, params: { permlink } }) {
+    async removeFavorite({ auth: { userId }, params: { permlink } }) {
         return await this.callService('options', 'removeFavorite', { userId, permlink });
     }
 
-    async getBlackList({ auth: { user: owner } }) {
+    async getBlackList({ auth: { userId: owner } }) {
         return await this.callService('notify', 'getBlackList', { owner });
     }
 
-    async addToBlackList({ auth: { user: owner }, params: { banned } }) {
+    async addToBlackList({ auth: { userId: owner }, params: { banned } }) {
         return await this.callService('notify', 'addToBlackList', { owner, banned });
     }
 
-    async removeFromBlackList({ auth: { user: owner }, params: { banned } }) {
+    async removeFromBlackList({ auth: { userId: owner }, params: { banned } }) {
         return await this.callService('notify', 'removeFromBlackList', { owner, banned });
     }
 }
