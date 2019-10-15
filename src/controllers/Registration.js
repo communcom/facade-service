@@ -2,57 +2,31 @@ const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
 
 class Registration extends Basic {
-    async getState({ params: { user, phone } }) {
-        const data = { user, phone };
-
-        return await this._transfer('getState', data);
+    async getState({ params }) {
+        return await this.callService('registration', 'getState', params);
     }
 
-    async firstStep({ params: { captcha, user, phone, mail, testingPass } }) {
-        const data = { captcha, user, phone, mail, testingPass };
-
-        return await this._transfer('firstStep', data);
+    async firstStep({ params }) {
+        return await this.callService('registration', 'firstStep', params);
     }
 
-    async verify({ params: { user, ...data } }) {
-        const requestData = { user, ...data };
-
-        return await this._transfer('verify', requestData);
+    async verify({ params }) {
+        return await this.callService('registration', 'verify', params);
     }
 
-    async setUsername({ params: { user, phone, ...data } }) {
-        const requestData = { user, phone, ...data };
-
-        return await this._transfer('setUsername', requestData);
+    async setUsername({ params }) {
+        return await this.callService('registration', 'setUsername', params);
     }
 
-    async toBlockChain({ params: { user, owner, active, posting, memo } }) {
-        const data = { user, owner, active, posting, memo };
-
-        return await this._transfer('toBlockChain', data);
+    async toBlockChain({ params }) {
+        return await this.callService('registration', 'toBlockChain', params);
     }
 
-    async changePhone({ params: { user, phone, captcha, testingPass } }) {
-        const data = { user, phone, captcha, testingPass };
-
-        return await this._transfer('changePhone', data);
+    /* TODO
+    async resendSmsCode({ params }) {
+        return await this.callService('registration', 'resendSmsCode', params);
     }
-
-    async resendSmsCode({ params: { user, phone } }) {
-        const data = { user, phone };
-
-        return await this._transfer('resendSmsCode', data);
-    }
-
-    async subscribeOnSmsGet({ routing: { channelId }, params: { user, phone } }) {
-        const data = { channelId, user, phone };
-
-        return await this._transfer('subscribeOnSmsGet', data);
-    }
-
-    async _transfer(method, data) {
-        return await this.callService('registration', method, data);
-    }
+    */
 }
 
 module.exports = Registration;
