@@ -7,13 +7,11 @@ const History = require('../controllers/History');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
 const Registration = require('../controllers/Registration');
-const Rates = require('../controllers/Rates');
 const Content = require('../controllers/Content');
 const Meta = require('../controllers/Meta');
 const Bandwidth = require('../controllers/Bandwidth');
 const Iframely = require('../controllers/Iframely');
 const Wallet = require('../controllers/Wallet');
-const StateReader = require('../controllers/StateReader');
 
 class Connector extends BasicConnector {
     constructor() {
@@ -27,13 +25,11 @@ class Connector extends BasicConnector {
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
         this._registration = new Registration(linking);
-        this._rates = new Rates(linking);
         this._content = new Content(linking);
         this._meta = new Meta(linking);
         this._bandwidth = new Bandwidth(linking);
         this._iframely = new Iframely(linking);
         this._wallet = new Wallet(linking);
-        this._stateReader = new StateReader(linking);
     }
 
     _checkAuth(params) {
@@ -53,13 +49,11 @@ class Connector extends BasicConnector {
         const transfer = this._transfer;
         const offline = this._offline;
         const registration = this._registration;
-        const rates = this._rates;
         const content = this._content;
         const meta = this._meta;
         const bandwidth = this._bandwidth;
         const iframely = this._iframely;
         const wallet = this._wallet;
-        const stateReader = this._stateReader;
 
         const authCheck = {
             handler: this._checkAuth,
@@ -211,18 +205,10 @@ class Connector extends BasicConnector {
                     handler: registration.subscribeOnSmsGet,
                     scope: registration,
                 },
-                'rates.getActual': {
-                    handler: rates.getActual,
-                    scope: rates,
-                },
-                'rates.getHistorical': {
-                    handler: rates.getHistorical,
-                    scope: rates,
-                },
-                'rates.getHistoricalMulti': {
-                    handler: rates.getHistoricalMulti,
-                    scope: rates,
-                },
+
+                'rates.getActual': this._proxyTo('rates', 'getActual'),
+                'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
+                'rates.getHistoricalMulti': this._proxyTo('rates', 'getHistoricalMulti'),
 
                 'content.getComment': content.createCallProxy('getComment'),
                 'content.getComments': content.createCallProxy('getComments'),
@@ -310,26 +296,14 @@ class Connector extends BasicConnector {
                     handler: wallet.getValidators,
                     scope: wallet,
                 },
-                'stateReader.getDelegations': {
-                    handler: stateReader.getDelegations,
-                    scope: stateReader,
-                },
-                'stateReader.getValidators': {
-                    handler: stateReader.getValidators,
-                    scope: stateReader,
-                },
-                'stateReader.getLeaders': {
-                    handler: stateReader.getLeaders,
-                    scope: stateReader,
-                },
-                'stateReader.getNameBids': {
-                    handler: stateReader.getNameBids,
-                    scope: stateReader,
-                },
-                'stateReader.getLastClosedBid': {
-                    handler: stateReader.getLastClosedBid,
-                    scope: stateReader,
-                },
+                'stateReader.getDelegations': this._proxyTo('stateReader', 'getDelegations'),
+                'stateReader.getValidators': this._proxyTo('stateReader', 'getValidators'),
+                'stateReader.getLeaders': this._proxyTo('stateReader', 'getLeaders'),
+                'stateReader.getNameBids': this._proxyTo('stateReader', 'getNameBids'),
+                'stateReader.getLastClosedBid': this._proxyTo('stateReader', 'getLastClosedBid'),
+
+                'geoip.lookup': ({ meta }) =>
+                    this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
                 /* service points */
                 offline: {
@@ -360,8 +334,15 @@ class Connector extends BasicConnector {
                 bandwidth: env.GLS_BANDWIDTH_PROVIDER_CONNECT,
                 wallet: env.GLS_WALLET_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
+                geoip: env.GLS_GEOIP_CONNECT,
             },
         });
+    }
+
+    _proxyTo(serviceName, methodName) {
+        return async ({ params, auth }) => {
+            return await this.callService(serviceName, methodName, params, auth);
+        };
     }
 }
 
