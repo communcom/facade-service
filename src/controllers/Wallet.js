@@ -22,9 +22,8 @@ class Wallet extends Basic {
         return await this.callService('wallet', 'getClaimHistory', params);
     }
 
-    async getValidators({ auth: { user: currentUserId } }) {
-        const data = { currentUserId };
-        return await this.callService('wallet', 'getValidators', data);
+    async getValidators({ auth: { userId: currentUserId } }) {
+        return await this.callService('wallet', 'getValidators', { currentUserId });
     }
 }
 
