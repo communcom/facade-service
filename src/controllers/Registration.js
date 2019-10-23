@@ -22,11 +22,9 @@ class Registration extends Basic {
         return await this.callService('registration', 'toBlockChain', params);
     }
 
-    /* TODO
     async resendSmsCode({ params }) {
         return await this.callService('registration', 'resendSmsCode', params);
     }
-    */
 }
 
 module.exports = Registration;
