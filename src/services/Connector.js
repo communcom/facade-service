@@ -217,7 +217,7 @@ class Connector extends BasicConnector {
                 'content.getProfile': content.createCallProxy('getProfile'),
                 'content.suggestNames': content.createCallProxy('suggestNames'),
                 'content.getChargers': content.createCallProxy('getChargers'),
-                'content.getLeadersTop': content.createCallProxy('getLeadersTop'),
+                'content.getLeaders': content.createCallProxy('getLeaders'),
                 'content.getHashTagTop': content.createCallProxy('getHashTagTop'),
                 'content.waitForBlock': content.createCallProxy('waitForBlock'),
                 'content.waitForTransaction': content.createCallProxy('waitForTransaction'),
