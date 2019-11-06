@@ -14,18 +14,19 @@ class Iframely extends Basic {
 
         try {
             const response = await fetch(embedUrl);
-            if (response.ok) {
-                return await response.json();
-            } else {
+
+            if (!response.ok) {
                 throw {
                     code: 1102,
                     message: 'Iframely error',
                     error: await response.text(),
                 };
             }
-        } catch (error) {
-            Logger.error('Iframely error -- ', error.stack || error);
-            throw error;
+
+            return this._normalizeResult(await response.json());
+        } catch (err) {
+            Logger.error('Iframely error:', err);
+            throw err;
         }
     }
 
@@ -49,6 +50,14 @@ class Iframely extends Basic {
                 message: `URL ${url} is not a valid URL`,
             };
         }
+    }
+
+    _normalizeResult(result) {
+        if (result.type === 'photo') {
+            result.type = 'image';
+        }
+
+        return result;
     }
 }
 
