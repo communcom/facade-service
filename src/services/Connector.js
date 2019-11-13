@@ -217,7 +217,8 @@ class Connector extends BasicConnector {
                 'content.getProfile': content.createCallProxy('getProfile'),
                 'content.suggestNames': content.createCallProxy('suggestNames'),
                 'content.getChargers': content.createCallProxy('getChargers'),
-                'content.getLeadersTop': content.createCallProxy('getLeadersTop'),
+                'content.getLeaders': content.createCallProxy('getLeaders'),
+                'content.getLeaderCommunities': content.createCallProxy('getLeaderCommunities'),
                 'content.getHashTagTop': content.createCallProxy('getHashTagTop'),
                 'content.waitForBlock': content.createCallProxy('waitForBlock'),
                 'content.waitForTransaction': content.createCallProxy('waitForTransaction'),
@@ -235,6 +236,8 @@ class Connector extends BasicConnector {
                 'content.getCommunity': content.createCallProxy('getCommunity'),
                 'content.getCommunities': content.createCallProxy('getCommunities'),
                 'content.getBlacklist': content.createCallProxy('getBlacklist'),
+                'content.getReportsList': content.createCallProxy('getReportsList'),
+                'content.getEntityReports': content.createCallProxy('getEntityReports'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
