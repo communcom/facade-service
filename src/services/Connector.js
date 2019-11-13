@@ -234,6 +234,7 @@ class Connector extends BasicConnector {
                 'content.getCommunitySettings': content.createCallProxy('getCommunitySettings'),
                 'content.getCommunity': content.createCallProxy('getCommunity'),
                 'content.getCommunities': content.createCallProxy('getCommunities'),
+                'content.getBlacklist': content.createCallProxy('getBlacklist'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
