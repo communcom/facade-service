@@ -193,16 +193,8 @@ class Connector extends BasicConnector {
                     handler: registration.toBlockChain,
                     scope: registration,
                 },
-                'registration.changePhone': {
-                    handler: registration.changePhone,
-                    scope: registration,
-                },
                 'registration.resendSmsCode': {
                     handler: registration.resendSmsCode,
-                    scope: registration,
-                },
-                'registration.subscribeOnSmsGet': {
-                    handler: registration.subscribeOnSmsGet,
                     scope: registration,
                 },
 
@@ -276,28 +268,24 @@ class Connector extends BasicConnector {
                     handler: iframely.getEmbed,
                     scope: iframely,
                 },
-                'wallet.getTransferHistory': {
-                    handler: wallet.getTransferHistory,
-                    scope: wallet,
-                },
                 'wallet.getBalance': {
                     handler: wallet.getBalance,
                     scope: wallet,
                 },
-                'wallet.getDelegationState': {
-                    handler: wallet.getDelegationState,
-                    scope: wallet,
-                },
-                'wallet.getTokensInfo': {
-                    handler: wallet.getTokensInfo,
+                'wallet.getTransferHistory': {
+                    handler: wallet.getTransferHistory,
                     scope: wallet,
                 },
                 'wallet.getClaimHistory': {
                     handler: wallet.getClaimHistory,
                     scope: wallet,
                 },
-                'wallet.getValidators': {
-                    handler: wallet.getValidators,
+                'wallet.getSellPrice': {
+                    handler: wallet.getSellPrice,
+                    scope: wallet,
+                },
+                'wallet.getBuyPrice': {
+                    handler: wallet.getBuyPrice,
                     scope: wallet,
                 },
                 'stateReader.getDelegations': this._proxyTo('stateReader', 'getDelegations'),
