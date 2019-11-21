@@ -9,21 +9,10 @@ class Iframely extends Basic {
     async getEmbed({ params: { type, url } }) {
         this._validateTypeOrThrow(type);
         this._validateUrlOrThrow(url);
-
-        const embedUrl = `${env.GLS_IFRAMELY_CONNECT}/${type}?url=${url}`;
-
         try {
-            const response = await fetch(embedUrl);
+            const response = await this.callService('embedsCache', 'getEmbed', { type, url });
 
-            if (!response.ok) {
-                throw {
-                    code: 1102,
-                    message: 'Iframely error',
-                    error: await response.text(),
-                };
-            }
-
-            return this._normalizeResult(await response.json());
+            return this._normalizeResult(response);
         } catch (err) {
             Logger.error('Iframely error:', err);
             throw err;

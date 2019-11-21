@@ -327,6 +327,7 @@ class Connector extends BasicConnector {
                 wallet: env.GLS_WALLET_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
+                embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
             },
         });
     }
