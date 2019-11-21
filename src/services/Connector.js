@@ -10,7 +10,6 @@ const Registration = require('../controllers/Registration');
 const Content = require('../controllers/Content');
 const Meta = require('../controllers/Meta');
 const Bandwidth = require('../controllers/Bandwidth');
-const Iframely = require('../controllers/Iframely');
 const Wallet = require('../controllers/Wallet');
 
 class Connector extends BasicConnector {
@@ -28,7 +27,6 @@ class Connector extends BasicConnector {
         this._content = new Content(linking);
         this._meta = new Meta(linking);
         this._bandwidth = new Bandwidth(linking);
-        this._iframely = new Iframely(linking);
         this._wallet = new Wallet(linking);
     }
 
@@ -52,7 +50,6 @@ class Connector extends BasicConnector {
         const content = this._content;
         const meta = this._meta;
         const bandwidth = this._bandwidth;
-        const iframely = this._iframely;
         const wallet = this._wallet;
 
         const authCheck = {
@@ -264,10 +261,6 @@ class Connector extends BasicConnector {
                     handler: bandwidth.createCallProxy('signAndExecuteProposal'),
                     before: [authCheck],
                 },
-                'frame.getEmbed': {
-                    handler: iframely.getEmbed,
-                    scope: iframely,
-                },
                 'wallet.getBalance': {
                     handler: wallet.getBalance,
                     scope: wallet,
@@ -288,6 +281,9 @@ class Connector extends BasicConnector {
                     handler: wallet.getBuyPrice,
                     scope: wallet,
                 },
+
+                'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
+
                 'stateReader.getDelegations': this._proxyTo('stateReader', 'getDelegations'),
                 'stateReader.getValidators': this._proxyTo('stateReader', 'getValidators'),
                 'stateReader.getLeaders': this._proxyTo('stateReader', 'getLeaders'),
