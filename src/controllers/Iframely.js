@@ -1,18 +1,15 @@
-const fetch = require('node-fetch');
 const urlValidator = require('valid-url');
 const core = require('cyberway-core-service');
-const Basic = core.controllers.Basic;
-const Logger = core.utils.Logger;
-const env = require('../data/env');
+const { Basic } = core.controllers;
+const { Logger } = core.utils;
 
 class Iframely extends Basic {
     async getEmbed({ params: { type, url } }) {
         this._validateTypeOrThrow(type);
         this._validateUrlOrThrow(url);
-        try {
-            const response = await this.callService('embedsCache', 'getEmbed', { type, url });
 
-            return this._normalizeResult(response);
+        try {
+            return await this.callService('embedsCache', 'getEmbed', { type, url });
         } catch (err) {
             Logger.error('Iframely error:', err);
             throw err;
@@ -25,7 +22,7 @@ class Iframely extends Basic {
         if (!typeIsValid) {
             throw {
                 code: 1101,
-                message: `Type ${type} is not a valid type`,
+                message: `Type "${type}" is not valid`,
             };
         }
     }
@@ -36,17 +33,9 @@ class Iframely extends Basic {
         if (!urlIsValid) {
             throw {
                 code: 1101,
-                message: `URL ${url} is not a valid URL`,
+                message: 'URL is not valid',
             };
         }
-    }
-
-    _normalizeResult(result) {
-        if (result.type === 'photo') {
-            result.type = 'image';
-        }
-
-        return result;
     }
 }
 
