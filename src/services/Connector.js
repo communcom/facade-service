@@ -172,10 +172,19 @@ class Connector extends BasicConnector {
                 'registration.verify': this._proxyTo('registration', 'verify'),
                 'registration.setUsername': this._proxyTo('registration', 'setUsername'),
                 'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
-                'registration.resendSmsCode':this._proxyTo('registration', 'resendSmsCode'),
-                'registration.onboardingCommunitySubscription': this._proxyTo('registration', 'onboardingCommunitySubscription'),
-                'registration.onboardingDeviceSwitched': this._proxyTo('registration', 'onboardingDeviceSwitched'),
-                'registration.onboardingSharedLink': this._proxyTo('registration', 'onboardingSharedLink'),
+                'registration.resendSmsCode': this._proxyTo('registration', 'resendSmsCode'),
+                'registration.onboardingCommunitySubscription': this._proxyTo(
+                    'registration',
+                    'onboardingCommunitySubscription'
+                ),
+                'registration.onboardingDeviceSwitched': this._proxyTo(
+                    'registration',
+                    'onboardingDeviceSwitched'
+                ),
+                'registration.onboardingSharedLink': this._proxyTo(
+                    'registration',
+                    'onboardingSharedLink'
+                ),
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
                 'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
@@ -275,7 +284,9 @@ class Connector extends BasicConnector {
                 'geoip.lookup': ({ meta }) =>
                     this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
-                'config.getConfig': this._proxyTo('config', 'getConfig'),
+                'config.getConfig': ({ auth, clientInfo }) =>
+                    // pass clientInfo as params
+                    this.callService('config', 'getConfig', clientInfo, auth),
 
                 /* service points */
                 offline: {
