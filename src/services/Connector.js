@@ -170,42 +170,15 @@ class Connector extends BasicConnector {
                     scope: options,
                     before: [authCheck],
                 },
-                'registration.getState': {
-                    handler: registration.getState,
-                    scope: registration,
-                },
-                'registration.firstStep': {
-                    handler: registration.firstStep,
-                    scope: registration,
-                },
-                'registration.verify': {
-                    handler: registration.verify,
-                    scope: registration,
-                },
-                'registration.setUsername': {
-                    handler: registration.setUsername,
-                    scope: registration,
-                },
-                'registration.toBlockChain': {
-                    handler: registration.toBlockChain,
-                    scope: registration,
-                },
-                'registration.resendSmsCode': {
-                    handler: registration.resendSmsCode,
-                    scope: registration,
-                },
-                'registration.onboardingCommunitySubscription': {
-                    handler: registration.onboardingCommunitySubscriptions,
-                    scope: registration,
-                },
-                'registration.onboardingDeviceSwitched': {
-                    handler: registration.onboardingDeviceSwitched,
-                    scope: registration,
-                },
-                'registration.onboardingSharedLink': {
-                    handler: registration.onboardingSharedLink,
-                    scope: registration,
-                },
+                'registration.getState': this._proxyTo('registration', 'getState'),
+                'registration.firstStep': this._proxyTo('registration', 'firstStep'),
+                'registration.verify': this._proxyTo('registration', 'verify'),
+                'registration.setUsername': this._proxyTo('registration', 'setUsername'),
+                'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
+                'registration.resendSmsCode':this._proxyTo('registration', 'resendSmsCode'),
+                'registration.onboardingCommunitySubscription': this._proxyTo('registration', 'onboardingCommunitySubscription'),
+                'registration.onboardingDeviceSwitched': this._proxyTo('registration', 'onboardingDeviceSwitched'),
+                'registration.onboardingSharedLink': this._proxyTo('registration', 'onboardingSharedLink'),
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
                 'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
@@ -344,8 +317,8 @@ class Connector extends BasicConnector {
     }
 
     _proxyTo(serviceName, methodName) {
-        return async ({ params, auth }) => {
-            return await this.callService(serviceName, methodName, params, auth);
+        return async ({ params, auth, clientInfo }) => {
+            return await this.callService(serviceName, methodName, params, auth, clientInfo);
         };
     }
 }
