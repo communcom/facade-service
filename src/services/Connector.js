@@ -22,7 +22,6 @@ class Connector extends BasicConnector {
         this._history = new History(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
-        this._registration = new Registration(linking);
         this._content = new Content(linking);
         this._meta = new Meta(linking);
         this._bandwidth = new Bandwidth(linking);
@@ -45,7 +44,6 @@ class Connector extends BasicConnector {
         const history = this._history;
         const transfer = this._transfer;
         const offline = this._offline;
-        const registration = this._registration;
         const content = this._content;
         const meta = this._meta;
         const bandwidth = this._bandwidth;
