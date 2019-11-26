@@ -25,6 +25,18 @@ class Registration extends Basic {
     async resendSmsCode({ params }) {
         return await this.callService('registration', 'resendSmsCode', params);
     }
+
+    async onboardingCommunitySubscriptions({ params }) {
+        return await this.callService('registration', 'onboardingCommunitySubscriptions', params);
+    }
+
+    async onboardingDeviceSwitched({ params }) {
+        return await this.callService('registration', 'onboardingDeviceSwitched', params);
+    }
+
+    async onboardingSharedLink({ params }) {
+        return await this.callService('registration', 'onboardingSharedLink', params);
+    }
 }
 
 module.exports = Registration;

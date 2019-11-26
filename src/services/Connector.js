@@ -194,6 +194,18 @@ class Connector extends BasicConnector {
                     handler: registration.resendSmsCode,
                     scope: registration,
                 },
+                'registration.onboardingCommunitySubscription': {
+                    handler: registration.onboardingCommunitySubscriptions,
+                    scope: registration,
+                },
+                'registration.onboardingDeviceSwitched': {
+                    handler: registration.onboardingDeviceSwitched,
+                    scope: registration,
+                },
+                'registration.onboardingSharedLink': {
+                    handler: registration.onboardingSharedLink,
+                    scope: registration,
+                },
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
                 'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
