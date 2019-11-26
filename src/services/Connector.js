@@ -293,6 +293,8 @@ class Connector extends BasicConnector {
                 'geoip.lookup': ({ meta }) =>
                     this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
+                'config.getConfig': this._proxyTo('config', 'getConfig'),
+
                 /* service points */
                 offline: {
                     handler: offline.handle,
@@ -324,6 +326,7 @@ class Connector extends BasicConnector {
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
+                config: env.GLS_CONFIG_CONNECT,
             },
         });
     }
