@@ -6,7 +6,6 @@ const Subscribe = require('../controllers/Subscribe');
 const History = require('../controllers/History');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
-const Registration = require('../controllers/Registration');
 const Content = require('../controllers/Content');
 const Meta = require('../controllers/Meta');
 const Bandwidth = require('../controllers/Bandwidth');
@@ -23,7 +22,6 @@ class Connector extends BasicConnector {
         this._history = new History(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
-        this._registration = new Registration(linking);
         this._content = new Content(linking);
         this._meta = new Meta(linking);
         this._bandwidth = new Bandwidth(linking);
@@ -46,7 +44,6 @@ class Connector extends BasicConnector {
         const history = this._history;
         const transfer = this._transfer;
         const offline = this._offline;
-        const registration = this._registration;
         const content = this._content;
         const meta = this._meta;
         const bandwidth = this._bandwidth;
@@ -170,42 +167,15 @@ class Connector extends BasicConnector {
                     scope: options,
                     before: [authCheck],
                 },
-                'registration.getState': {
-                    handler: registration.getState,
-                    scope: registration,
-                },
-                'registration.firstStep': {
-                    handler: registration.firstStep,
-                    scope: registration,
-                },
-                'registration.verify': {
-                    handler: registration.verify,
-                    scope: registration,
-                },
-                'registration.setUsername': {
-                    handler: registration.setUsername,
-                    scope: registration,
-                },
-                'registration.toBlockChain': {
-                    handler: registration.toBlockChain,
-                    scope: registration,
-                },
-                'registration.resendSmsCode': {
-                    handler: registration.resendSmsCode,
-                    scope: registration,
-                },
-                'registration.onboardingCommunitySubscription': {
-                    handler: registration.onboardingCommunitySubscriptions,
-                    scope: registration,
-                },
-                'registration.onboardingDeviceSwitched': {
-                    handler: registration.onboardingDeviceSwitched,
-                    scope: registration,
-                },
-                'registration.onboardingSharedLink': {
-                    handler: registration.onboardingSharedLink,
-                    scope: registration,
-                },
+                'registration.getState': this._proxyTo('registration', 'getState'),
+                'registration.firstStep': this._proxyTo('registration', 'firstStep'),
+                'registration.verify': this._proxyTo('registration', 'verify'),
+                'registration.setUsername': this._proxyTo('registration', 'setUsername'),
+                'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
+                'registration.resendSmsCode':this._proxyTo('registration', 'resendSmsCode'),
+                'registration.onboardingCommunitySubscription': this._proxyTo('registration', 'onboardingCommunitySubscription'),
+                'registration.onboardingDeviceSwitched': this._proxyTo('registration', 'onboardingDeviceSwitched'),
+                'registration.onboardingSharedLink': this._proxyTo('registration', 'onboardingSharedLink'),
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
                 'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
@@ -344,8 +314,8 @@ class Connector extends BasicConnector {
     }
 
     _proxyTo(serviceName, methodName) {
-        return async ({ params, auth }) => {
-            return await this.callService(serviceName, methodName, params, auth);
+        return async ({ params, auth, clientInfo }) => {
+            return await this.callService(serviceName, methodName, params, auth, clientInfo);
         };
     }
 }
