@@ -6,7 +6,6 @@ const Subscribe = require('../controllers/Subscribe');
 const History = require('../controllers/History');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
-const Registration = require('../controllers/Registration');
 const Content = require('../controllers/Content');
 const Meta = require('../controllers/Meta');
 const Bandwidth = require('../controllers/Bandwidth');
