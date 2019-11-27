@@ -173,9 +173,9 @@ class Connector extends BasicConnector {
                 'registration.setUsername': this._proxyTo('registration', 'setUsername'),
                 'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
                 'registration.resendSmsCode': this._proxyTo('registration', 'resendSmsCode'),
-                'registration.onboardingCommunitySubscription': this._proxyTo(
+                'registration.onboardingCommunitySubscriptions': this._proxyTo(
                     'registration',
-                    'onboardingCommunitySubscription'
+                    'onboardingCommunitySubscriptions'
                 ),
                 'registration.onboardingDeviceSwitched': ({ auth, clientInfo }) => {
                     console.log(auth, clientInfo);
