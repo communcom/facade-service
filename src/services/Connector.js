@@ -178,7 +178,6 @@ class Connector extends BasicConnector {
                     'onboardingCommunitySubscriptions'
                 ),
                 'registration.onboardingDeviceSwitched': ({ auth, clientInfo }) => {
-                    console.log(auth, clientInfo);
                     // pass clientInfo as params
                     return this.callService(
                         'registration',
