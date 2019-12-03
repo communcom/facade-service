@@ -3,7 +3,7 @@ const { Basic } = core.controllers;
 
 class Content extends Basic {
     createCallProxy(methodName) {
-        return async ({ auth, params }) => {
+        return async ({ auth, params, clientInfo }) => {
             let serviceName;
 
             switch (methodName) {
@@ -18,7 +18,7 @@ class Content extends Basic {
                     serviceName = 'prismApi';
             }
 
-            return await this.callService(serviceName, methodName, params, auth);
+            return await this.callService(serviceName, methodName, params, auth, clientInfo);
         };
     }
 }
