@@ -278,6 +278,10 @@ class Connector extends BasicConnector {
                     handler: wallet.getBuyPrice,
                     scope: wallet,
                 },
+                'wallet.getPointInfo': {
+                    handler: wallet.getPointInfo,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
