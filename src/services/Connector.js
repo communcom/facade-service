@@ -140,7 +140,7 @@ class Connector extends BasicConnector {
                     scope: meta,
                 },
                 'meta.recordPostView': {
-                    handler: meta.recordPostView,
+                    handler: this._proxyTo('meta', 'recordPostView'),
                     scope: meta,
                 },
                 'meta.markUserOnline': {

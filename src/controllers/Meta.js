@@ -2,14 +2,6 @@ const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
 
 class Meta extends Basic {
-    async recordPostView({ meta: { clientRequestIp }, params: { postLink, fingerPrint } }) {
-        return await this.callService('meta', 'recordPostView', {
-            postLink,
-            fingerPrint,
-            clientRequestIp,
-        });
-    }
-
     async getPostsViewCount({ params: { postLinks } }) {
         return await this.callService('meta', 'getPostsViewCount', { postLinks });
     }
