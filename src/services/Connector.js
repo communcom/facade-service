@@ -15,11 +15,12 @@ class Connector extends BasicConnector {
     constructor() {
         super();
 
+        this._checkAuth = this._checkAuth.bind(this);
+
         const linking = { connector: this };
 
         this._options = new Options(linking);
         this._subscribe = new Subscribe(linking);
-        this._history = new History(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
         this._content = new Content(linking);
@@ -29,19 +30,18 @@ class Connector extends BasicConnector {
     }
 
     _checkAuth(params) {
-        if (params.auth && params.auth.user) {
-            return params;
+        if (!params.auth || !params.auth.user) {
+            throw {
+                code: 1103,
+                message: 'Unauthorized request: access denied',
+            };
         }
-        throw {
-            code: 1103,
-            message: 'Unauthorized request: access denied',
-        };
+
+        return params;
     }
 
     async start() {
         const options = this._options;
-        const subscribe = this._subscribe;
-        const history = this._history;
         const transfer = this._transfer;
         const offline = this._offline;
         const content = this._content;
@@ -49,123 +49,36 @@ class Connector extends BasicConnector {
         const bandwidth = this._bandwidth;
         const wallet = this._wallet;
 
-        const authCheck = {
-            handler: this._checkAuth,
-            scope: this,
-        };
-
         await super.start({
             serverRoutes: {
                 /* public points */
                 'options.get': {
                     handler: options.get,
                     scope: options,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'options.set': {
                     handler: options.set,
                     scope: options,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
-                'onlineNotify.on': {
-                    handler: subscribe.onlineNotifyOn,
-                    scope: subscribe,
-                    before: [authCheck],
-                },
-                'onlineNotify.off': {
-                    handler: subscribe.onlineNotifyOff,
-                    scope: subscribe,
-                    before: [authCheck],
-                },
-                'onlineNotify.history': {
-                    handler: history.onlineNotify,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'onlineNotify.historyFresh': {
-                    handler: history.onlineNotifyFresh,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'push.notifyOn': {
-                    handler: subscribe.pushNotifyOn,
-                    scope: subscribe,
-                    before: [authCheck],
-                },
-                'push.notifyOff': {
-                    handler: subscribe.pushNotifyOff,
-                    scope: subscribe,
-                    before: [authCheck],
-                },
-                'push.history': {
-                    handler: history.push,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'push.historyFresh': {
-                    handler: history.pushFresh,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.getHistory': {
-                    handler: history.notify,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.getHistoryFresh': {
-                    handler: history.notifyFresh,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.markAsViewed': {
-                    handler: history.markAsViewed,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.markAllAsViewed': {
-                    handler: history.markAllAsViewed,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.markAsRead': {
-                    handler: history.markAsRead,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.markAllAsRead': {
-                    handler: history.markAllAsRead,
-                    scope: history,
-                    before: [authCheck],
-                },
-                'notify.getBlackList': {
-                    handler: options.getBlackList,
-                    scope: options,
-                    before: [authCheck],
-                },
-                'notify.addToBlackList': {
-                    handler: options.addToBlackList,
-                    scope: options,
-                    before: [authCheck],
-                },
-                'notify.removeFromBlackList': {
-                    handler: options.removeFromBlackList,
-                    scope: options,
-                    before: [authCheck],
-                },
+
+                'notify.getNotifications': this._authProxyTo('notify', 'getNotifications'),
+
                 'favorites.get': {
                     handler: options.getFavorites,
                     scope: options,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'favorites.add': {
                     handler: options.addFavorite,
                     scope: options,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'favorites.remove': {
                     handler: options.removeFavorite,
                     scope: options,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
@@ -236,7 +149,7 @@ class Connector extends BasicConnector {
                 'meta.markUserOnline': {
                     handler: meta.markUserOnline,
                     scope: meta,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'meta.getUserLastOnline': {
                     handler: meta.getUserLastOnline,
@@ -244,19 +157,19 @@ class Connector extends BasicConnector {
                 },
                 'bandwidth.provide': {
                     handler: bandwidth.createCallProxy('provide'),
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'bandwidth.createProposal': {
                     handler: bandwidth.createCallProxy('createProposal'),
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'bandwidth.getProposals': {
                     handler: bandwidth.createCallProxy('getProposals'),
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'bandwidth.signAndExecuteProposal': {
                     handler: bandwidth.createCallProxy('signAndExecuteProposal'),
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
                 'wallet.getBalance': {
                     handler: wallet.getBalance,
@@ -302,7 +215,7 @@ class Connector extends BasicConnector {
                 offline: {
                     handler: offline.handle,
                     scope: offline,
-                    before: [authCheck],
+                    before: [this._checkAuth],
                 },
 
                 /* inner services only points */
@@ -337,6 +250,15 @@ class Connector extends BasicConnector {
     _proxyTo(serviceName, methodName) {
         return async ({ params, auth, clientInfo }) => {
             return await this.callService(serviceName, methodName, params, auth, clientInfo);
+        };
+    }
+
+    _authProxyTo(serviceName, methodName) {
+        return {
+            handler: async ({ params, auth, clientInfo }) => {
+                return await this.callService(serviceName, methodName, params, auth, clientInfo);
+            },
+            before: [this._checkAuth],
         };
     }
 }
