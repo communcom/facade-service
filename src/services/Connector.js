@@ -2,8 +2,6 @@ const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
 const Options = require('../controllers/Options');
-const Subscribe = require('../controllers/Subscribe');
-const History = require('../controllers/History');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
 const Content = require('../controllers/Content');
@@ -20,7 +18,6 @@ class Connector extends BasicConnector {
         const linking = { connector: this };
 
         this._options = new Options(linking);
-        this._subscribe = new Subscribe(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
         this._content = new Content(linking);
