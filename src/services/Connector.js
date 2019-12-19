@@ -61,7 +61,7 @@ class Connector extends BasicConnector {
 
                 'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
                 'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),
-                'device.cancelFcmToken': this._authProxyTo('options', 'cancelFcmToken'),
+                'device.resetFcmToken': this._authProxyTo('options', 'resetFcmToken'),
 
                 'notifications.getNotifications': this._authProxyTo(
                     'notifications',
