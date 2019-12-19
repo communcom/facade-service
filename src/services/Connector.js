@@ -60,6 +60,10 @@ class Connector extends BasicConnector {
                     before: [this._checkAuth],
                 },
 
+                'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
+                'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),
+                'device.cancelFcmToken': this._authProxyTo('options', 'cancelFcmToken'),
+
                 'notifications.getNotifications': this._authProxyTo(
                     'notifications',
                     'getNotifications'
@@ -71,21 +75,6 @@ class Connector extends BasicConnector {
                 ),
                 'notifications.markAsRead': this._authProxyTo('notifications', 'markAsRead'),
 
-                'favorites.get': {
-                    handler: options.getFavorites,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'favorites.add': {
-                    handler: options.addFavorite,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'favorites.remove': {
-                    handler: options.removeFavorite,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
                 'registration.verify': this._proxyTo('registration', 'verify'),
