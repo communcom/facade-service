@@ -48,7 +48,6 @@ class Connector extends BasicConnector {
 
         await super.start({
             serverRoutes: {
-                /* public points */
                 'options.get': {
                     handler: options.get,
                     scope: options,
@@ -214,7 +213,7 @@ class Connector extends BasicConnector {
                 'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
                 'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
 
-                /* service points */
+                /* service endpoints */
                 offline: {
                     handler: offline.handle,
                     scope: offline,
