@@ -208,6 +208,14 @@ class Connector extends BasicConnector {
                     // pass clientInfo as params
                     this.callService('config', 'getConfig', clientInfo, auth),
 
+                'exchange.getCurrencies': this._proxyTo('exchange', 'getCurrencies'),
+                'exchange.getCurrenciesFull': this._proxyTo('exchange', 'getCurrenciesFull'),
+                'exchange.getMinAmount': this._proxyTo('exchange', 'getMinAmount'),
+                'exchange.getExchangeAmount': this._proxyTo('exchange', 'getExchangeAmount'),
+                'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
+                'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
+                'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
+
                 /* service points */
                 offline: {
                     handler: offline.handle,
@@ -240,6 +248,7 @@ class Connector extends BasicConnector {
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
                 config: env.GLS_CONFIG_CONNECT,
+                exchange: env.GLS_EXCHANGE_CONNECT,
             },
         });
     }
