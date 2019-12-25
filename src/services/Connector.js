@@ -73,7 +73,7 @@ class Connector extends BasicConnector {
                     'markAllAsViewed'
                 ),
                 'notifications.markAsRead': this._authProxyTo('notifications', 'markAsRead'),
-                'notifications.subscribe': this._authProxyTo('notifications', 'subscribe'),
+                'notifications.subscribe': this._authProxyTo('notifications', 'subscribe', true),
                 'notifications.unsubscribe': this._authProxyTo('notifications', 'unsubscribe'),
 
                 'registration.getState': this._proxyTo('registration', 'getState'),
@@ -258,9 +258,16 @@ class Connector extends BasicConnector {
         };
     }
 
-    _authProxyTo(serviceName, methodName) {
+    _authProxyTo(serviceName, methodName, withRouting = false) {
         return {
-            handler: async ({ params, auth, clientInfo }) => {
+            handler: async ({ params, auth, clientInfo, routing }) => {
+                if (withRouting) {
+                    params = {
+                        ...params,
+                        routing,
+                    };
+                }
+
                 return await this.callService(serviceName, methodName, params, auth, clientInfo);
             },
             before: [this._checkAuth],
