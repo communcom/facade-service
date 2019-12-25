@@ -73,6 +73,8 @@ class Connector extends BasicConnector {
                     'markAllAsViewed'
                 ),
                 'notifications.markAsRead': this._authProxyTo('notifications', 'markAsRead'),
+                'notifications.subscribe': this._authProxyTo('notifications', 'subscribe'),
+                'notifications.unsubscribe': this._authProxyTo('notifications', 'unsubscribe'),
 
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
