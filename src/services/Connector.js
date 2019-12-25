@@ -239,9 +239,8 @@ class Connector extends BasicConnector {
             },
             requiredClients: {
                 frontend: env.GLS_FRONTEND_GATE_CONNECT,
-                onlineNotify: env.GLS_ONLINE_NOTIFY_CONNECT,
                 notifications: env.GLS_NOTIFICATIONS_CONNECT,
-                notificationsSender: env.GLS_NOTIFICATIONS_CONNECT,
+                notificationsSender: env.GLS_NOTIFICATIONS_SENDER_CONNECT,
                 options: env.GLS_OPTIONS_CONNECT,
                 push: env.GLS_PUSH_CONNECT,
                 mail: env.GLS_MAIL_CONNECT,
