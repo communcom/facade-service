@@ -73,9 +73,14 @@ class Connector extends BasicConnector {
                     'markAllAsViewed'
                 ),
                 'notifications.markAsRead': this._authProxyTo('notifications', 'markAsRead'),
-                'notifications.subscribe': this._authProxyTo('notifications', 'subscribe', true),
+
+                'notifications.subscribe': this._authProxyTo(
+                    'notificationsSender',
+                    'subscribe',
+                    true
+                ),
                 'notifications.unsubscribe': this._authProxyTo(
-                    'notifications',
+                    'notificationsSender',
                     'unsubscribe',
                     true
                 ),
@@ -236,6 +241,7 @@ class Connector extends BasicConnector {
                 frontend: env.GLS_FRONTEND_GATE_CONNECT,
                 onlineNotify: env.GLS_ONLINE_NOTIFY_CONNECT,
                 notifications: env.GLS_NOTIFICATIONS_CONNECT,
+                notificationsSender: env.GLS_NOTIFICATIONS_CONNECT,
                 options: env.GLS_OPTIONS_CONNECT,
                 push: env.GLS_PUSH_CONNECT,
                 mail: env.GLS_MAIL_CONNECT,
