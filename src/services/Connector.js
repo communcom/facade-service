@@ -142,6 +142,7 @@ class Connector extends BasicConnector {
                 'content.getBlacklist': content.createCallProxy('getBlacklist'),
                 'content.getReportsList': content.createCallProxy('getReportsList'),
                 'content.getEntityReports': content.createCallProxy('getEntityReports'),
+                'content.getBanPostProposal': content.createCallProxy('getBanPostProposal'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
