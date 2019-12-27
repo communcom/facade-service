@@ -219,7 +219,7 @@ class Connector extends BasicConnector {
 
                 'exchange.getCurrencies': this._proxyTo('exchange', 'getCurrencies'),
                 'exchange.getCurrenciesFull': this._proxyTo('exchange', 'getCurrenciesFull'),
-                'exchange.getMinAmount': this._proxyTo('exchange', 'getMinAmount'),
+                'exchange.getMinMaxAmount': this._proxyTo('exchange', 'getMinMaxAmount'),
                 'exchange.getExchangeAmount': this._proxyTo('exchange', 'getExchangeAmount'),
                 'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
                 'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
