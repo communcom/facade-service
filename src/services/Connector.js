@@ -234,6 +234,9 @@ class Connector extends BasicConnector {
                 'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
                 'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
                 'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
+                'exchange.getClient': this._proxyTo('exchange', 'getClient'),
+                'exchange.createClient': this._proxyTo('exchange', 'createClient'),
+                'exchange.getOrCreateClient': this._proxyTo('exchange', 'getOrCreateClient'),
 
                 /* service endpoints */
                 offline: {
