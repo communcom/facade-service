@@ -58,6 +58,16 @@ class Connector extends BasicConnector {
                     scope: options,
                     before: [this._checkAuth],
                 },
+                'settings.getNotificationsSettings': {
+                    handler: options.getNotificationsSettings,
+                    scope: options,
+                    before: [this._checkAuth],
+                },
+                'settings.setNotificationsSettings': {
+                    handler: options.setNotificationsSettings,
+                    scope: options,
+                    before: [this._checkAuth],
+                },
 
                 'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
                 'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),

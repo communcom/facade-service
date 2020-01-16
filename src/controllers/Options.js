@@ -45,6 +45,26 @@ class Options extends Basic {
             };
         }
     }
+
+    async getNotificationsSettings({ params, auth, clientInfo }) {
+        return await this.callService(
+            'options',
+            'getNotificationsSettings',
+            params,
+            auth,
+            clientInfo
+        );
+    }
+
+    async setNotificationsSettings({ params, auth, clientInfo }) {
+        return await this.callService(
+            'options',
+            'setNotificationsSettings',
+            params,
+            auth,
+            clientInfo
+        );
+    }
 }
 
 module.exports = Options;
