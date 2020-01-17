@@ -240,6 +240,8 @@ class Connector extends BasicConnector {
                 'exchange.addCard': this._proxyTo('exchange', 'addCard'),
                 'exchange.chargeCard': this._proxyTo('exchange', 'chargeCard'),
                 'exchange.getRates': this._proxyTo('exchange', 'getRates'),
+                'rewards.getState': this._proxyTo('rewards', 'getState'),
+                'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
 
                 /* service endpoints */
                 offline: {
@@ -274,6 +276,7 @@ class Connector extends BasicConnector {
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
                 config: env.GLS_CONFIG_CONNECT,
                 exchange: env.GLS_EXCHANGE_CONNECT,
+                rewards: env.GLS_REWARDS_CONNECT,
             },
         });
     }
