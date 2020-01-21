@@ -105,16 +105,10 @@ class Connector extends BasicConnector {
                     'registration',
                     'onboardingCommunitySubscriptions'
                 ),
-                'registration.onboardingDeviceSwitched': ({ auth, clientInfo }) => {
-                    // pass clientInfo as params
-                    return this.callService(
-                        'registration',
-                        'onboardingDeviceSwitched',
-                        {},
-                        auth,
-                        clientInfo
-                    );
-                },
+                'registration.onboardingDeviceSwitched': this._proxyTo(
+                    'registration',
+                    'onboardingDeviceSwitched'
+                ),
                 'registration.onboardingSharedLink': this._proxyTo(
                     'registration',
                     'onboardingSharedLink'
