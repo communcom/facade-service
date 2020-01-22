@@ -65,6 +65,13 @@ class Options extends Basic {
             clientInfo
         );
     }
+    async getPushSettings({ params, auth, clientInfo }) {
+        return await this.callService('options', 'getPushSettings', params, auth, clientInfo);
+    }
+
+    async setPushSettings({ params, auth, clientInfo }) {
+        return await this.callService('options', 'setPushSettings', params, auth, clientInfo);
+    }
 }
 
 module.exports = Options;

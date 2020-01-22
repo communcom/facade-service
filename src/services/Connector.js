@@ -68,6 +68,16 @@ class Connector extends BasicConnector {
                     scope: options,
                     before: [this._checkAuth],
                 },
+                'settings.getPushSettings': {
+                    handler: options.getPushSettings,
+                    scope: options,
+                    before: [this._checkAuth],
+                },
+                'settings.setPushSettings': {
+                    handler: options.setPushSettings,
+                    scope: options,
+                    before: [this._checkAuth],
+                },
 
                 'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
                 'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),
