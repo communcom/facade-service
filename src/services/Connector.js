@@ -246,6 +246,7 @@ class Connector extends BasicConnector {
                 'exchange.addCard': this._proxyTo('exchange', 'addCard'),
                 'exchange.chargeCard': this._proxyTo('exchange', 'chargeCard'),
                 'exchange.getRates': this._proxyTo('exchange', 'getRates'),
+                'exchange.getCarbonStatus': this._proxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
 
