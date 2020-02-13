@@ -1,7 +1,8 @@
 module.exports = {
     CLIENT_STATUSES: {
-        GREEN: 'green',
-        YELLOW: 'yellow',
-        RED: 'red',
+        GREEN: 'GREEN',
+        YELLOW: 'YELLOW',
+        RED: 'RED',
+        GREY: 'GREY',
     },
 };

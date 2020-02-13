@@ -3,7 +3,7 @@ const { CLIENT_STATUSES } = require('../data/constants');
 class HealthcheckModel {
     constructor(
         {
-            clientStatuses = {},
+            clientStatuses = [],
             overallStatus = CLIENT_STATUSES.RED,
             lastHealthcheck = new Date(Date.now()),
         } = {

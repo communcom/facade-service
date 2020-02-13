@@ -36,10 +36,19 @@ class HealthcheckService extends BasicService {
                 this.clientStatusMap.set(clientName, { status, message });
             } catch (error) {
                 Logger.warn(`Error during getting "${clientName}" service status. Error:`, error);
-                this.clientStatusMap.set(clientName, {
-                    status: CLIENT_STATUSES.RED,
-                    message: error.message || 'Unknown error',
-                });
+
+                // method not found -> cannot set any status
+                if (error.code === -32601) {
+                    this.clientStatusMap.set(clientName, {
+                        status: CLIENT_STATUSES.GREY,
+                        message: null,
+                    });
+                } else {
+                    this.clientStatusMap.set(clientName, {
+                        status: CLIENT_STATUSES.RED,
+                        message: error.message || 'Unknown error',
+                    });
+                }
             } finally {
                 let hasRedStatusService = false;
                 for (const { status } of this.clientStatusMap.values()) {
@@ -51,10 +60,10 @@ class HealthcheckService extends BasicService {
                     ? CLIENT_STATUSES.YELLOW
                     : CLIENT_STATUSES.GREEN;
 
-                const clientStatuses = {};
+                const clientStatuses = [];
 
                 for (const [key, value] of this.clientStatusMap) {
-                    clientStatuses[key] = value;
+                    clientStatuses.push({ [key]: value });
                 }
 
                 this.status = new HealthcheckModel({
