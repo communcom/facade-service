@@ -5,24 +5,16 @@ class HealthcheckModel {
         {
             clientStatuses = [],
             overallStatus = CLIENT_STATUSES.RED,
-            lastHealthcheck = new Date(Date.now()),
+            lastHealthcheck = new Date(),
         } = {
             clientStatuses: {},
             overallStatus: CLIENT_STATUSES.RED,
-            lastHealthcheck: new Date(Date.now()),
+            lastHealthcheck: new Date(),
         }
     ) {
         this.clientStatuses = clientStatuses;
         this.overallStatus = overallStatus;
         this.lastHealthcheck = lastHealthcheck;
-    }
-
-    get status() {
-        return {
-            lastHealthcheck: this.lastHealthcheck,
-            overallStatus: this.overallStatus,
-            clientStatuses: this.clientStatuses,
-        };
     }
 }
 

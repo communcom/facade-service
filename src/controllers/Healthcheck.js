@@ -8,7 +8,7 @@ class Healthcheck extends Basic {
         this.healthcheckService = healthCheckService;
     }
     async healthcheck() {
-        return this.healthcheckService.status || new HealthcheckModel();
+        return this.healthcheckService.lastHealthcheck;
     }
 }
 

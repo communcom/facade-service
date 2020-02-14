@@ -9,7 +9,7 @@ class HealthcheckService extends BasicService {
         super();
 
         this.clientStatusMap = new Map(); // clientName (e.g. prism) -> status (e.g. "green")
-        this.status = new HealthcheckModel().status;
+        this.lastHealthcheck = new HealthcheckModel();
     }
 
     async start(...args) {
@@ -66,13 +66,17 @@ class HealthcheckService extends BasicService {
                     clientStatuses.push({ [key]: value });
                 }
 
-                this.status = new HealthcheckModel({
-                    lastHealthcheck: new Date(Date.now()),
+                this.lastHealthcheck = new HealthcheckModel({
+                    lastHealthcheck: new Date(),
                     overallStatus,
                     clientStatuses,
-                }).status;
+                });
             }
         }
+    }
+
+    getStatus() {
+        return this.lastHealthcheck;
     }
 }
 
