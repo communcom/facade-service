@@ -1,11 +1,10 @@
 const core = require('cyberway-core-service');
 const Basic = core.controllers.Basic;
-const HealthcheckModel = require('../utils/HealthcheckModel');
 
 class Healthcheck extends Basic {
-    constructor({ healthCheckService }) {
+    constructor({ healthcheckService }) {
         super();
-        this.healthcheckService = healthCheckService;
+        this.healthcheckService = healthcheckService;
     }
     async healthcheck() {
         return this.healthcheckService.lastHealthcheck;
