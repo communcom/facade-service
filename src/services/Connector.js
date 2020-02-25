@@ -8,9 +8,10 @@ const Content = require('../controllers/Content');
 const Meta = require('../controllers/Meta');
 const Bandwidth = require('../controllers/Bandwidth');
 const Wallet = require('../controllers/Wallet');
+const Healthcheck = require('../controllers/Healthcheck');
 
 class Connector extends BasicConnector {
-    constructor() {
+    constructor({ healthcheckService }) {
         super();
 
         this._checkAuth = this._checkAuth.bind(this);
@@ -24,6 +25,7 @@ class Connector extends BasicConnector {
         this._meta = new Meta(linking);
         this._bandwidth = new Bandwidth(linking);
         this._wallet = new Wallet(linking);
+        this._healthcheck = new Healthcheck({ ...linking, healthcheckService });
     }
 
     _checkAuth(params) {
@@ -45,6 +47,7 @@ class Connector extends BasicConnector {
         const meta = this._meta;
         const bandwidth = this._bandwidth;
         const wallet = this._wallet;
+        const healthcheck = this._healthcheck;
 
         await super.start({
             serverRoutes: {
@@ -261,6 +264,10 @@ class Connector extends BasicConnector {
                 transfer: {
                     handler: transfer.handle,
                     scope: transfer,
+                },
+                healthcheck: {
+                    handler: healthcheck.healthcheck,
+                    scope: healthcheck,
                 },
             },
             requiredClients: {
