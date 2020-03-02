@@ -63,7 +63,7 @@ class HealthcheckService extends BasicService {
                 const clientStatuses = [];
 
                 for (const [key, value] of this.clientStatusMap) {
-                    clientStatuses.push({ [key]: value });
+                    clientStatuses.push({ clientName: key, ...value });
                 }
 
                 this.lastHealthcheck = new HealthcheckModel({
