@@ -236,20 +236,20 @@ class Connector extends BasicConnector {
                     // pass clientInfo as params
                     this.callService('config', 'getConfig', clientInfo, auth),
 
-                'exchange.getCurrencies': this._proxyTo('exchange', 'getCurrencies'),
-                'exchange.getCurrenciesFull': this._proxyTo('exchange', 'getCurrenciesFull'),
-                'exchange.getMinMaxAmount': this._proxyTo('exchange', 'getMinMaxAmount'),
-                'exchange.getExchangeAmount': this._proxyTo('exchange', 'getExchangeAmount'),
-                'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
-                'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
-                'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
-                'exchange.getClient': this._proxyTo('exchange', 'getClient'),
-                'exchange.createClient': this._proxyTo('exchange', 'createClient'),
-                'exchange.getOrCreateClient': this._proxyTo('exchange', 'getOrCreateClient'),
-                'exchange.addCard': this._proxyTo('exchange', 'addCard'),
-                'exchange.chargeCard': this._proxyTo('exchange', 'chargeCard'),
-                'exchange.getRates': this._proxyTo('exchange', 'getRates'),
-                'exchange.getCarbonStatus': this._proxyTo('exchange', 'getCarbonStatus'),
+                'exchange.getCurrencies': this._exchangeProxyTo('exchange', 'getCurrencies'),
+                'exchange.getCurrenciesFull': this._exchangeProxyTo('exchange', 'getCurrenciesFull'),
+                'exchange.getMinMaxAmount': this._exchangeProxyTo('exchange', 'getMinMaxAmount'),
+                'exchange.getExchangeAmount': this._exchangeProxyTo('exchange', 'getExchangeAmount'),
+                'exchange.createTransaction': this._exchangeProxyTo('exchange', 'createTransaction'),
+                'exchange.getTransactions': this._exchangeProxyTo('exchange', 'getTransactions'),
+                'exchange.getStatus': this._exchangeProxyTo('exchange', 'getStatus'),
+                'exchange.getClient': this._exchangeProxyTo('exchange', 'getClient'),
+                'exchange.createClient': this._exchangeProxyTo('exchange', 'createClient'),
+                'exchange.getOrCreateClient': this._exchangeProxyTo('exchange', 'getOrCreateClient'),
+                'exchange.addCard': this._exchangeProxyTo('exchange', 'addCard'),
+                'exchange.chargeCard': this._exchangeProxyTo('exchange', 'chargeCard'),
+                'exchange.getRates': this._exchangeProxyTo('exchange', 'getRates'),
+                'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
                 'airdrops.getAirdrop': this._proxyTo('airdrops', 'getAirdrop'),
@@ -316,6 +316,12 @@ class Connector extends BasicConnector {
                 return await this.callService(serviceName, methodName, params, auth, clientInfo);
             },
             before: [this._checkAuth],
+        };
+    }
+
+    _exchangeProxyTo(serviceName, methodName) {
+        return async ({ params, auth, clientInfo, meta }) => {
+            return await this.callService(serviceName, methodName, params, auth, { ...clientInfo, ip: meta.clientRequestIp });
         };
     }
 }
