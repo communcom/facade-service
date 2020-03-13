@@ -57,6 +57,7 @@ class Connector extends BasicConnector {
                     before: [this._checkAuth],
                 },
                 'settings.getUserSettings': this._authProxyTo('settings', 'getUserSettings'),
+                'settings.setUserSettings': this._authProxyTo('settings', 'setUserSettings'),
                 'settings.getNotificationsSettings': this._authProxyTo(
                     'settings',
                     'getNotificationsSettings'
