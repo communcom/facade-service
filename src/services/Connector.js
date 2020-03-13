@@ -251,7 +251,7 @@ class Connector extends BasicConnector {
                 'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
-                'airdrops.getAirdrop': this._proxyTo('airdrops', 'getAirdrop'),
+                'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
 
                 /* service endpoints */
                 offline: {
@@ -291,7 +291,7 @@ class Connector extends BasicConnector {
                 config: env.GLS_CONFIG_CONNECT,
                 exchange: env.GLS_EXCHANGE_CONNECT,
                 rewards: env.GLS_REWARDS_CONNECT,
-                airdrops: env.GLS_AIRDROPS_CONNECT,
+                airdrop: env.GLS_AIRDROPS_CONNECT,
             },
         });
     }
