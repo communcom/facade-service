@@ -273,7 +273,7 @@ class Connector extends BasicConnector {
                 frontend: env.GLS_FRONTEND_GATE_CONNECT,
                 notifications: env.GLS_NOTIFICATIONS_CONNECT,
                 notificationsSender: env.GLS_NOTIFICATIONS_SENDER_CONNECT,
-                settings: env.GLS_OPTIONS_CONNECT,
+                settings: env.GLS_SETTINGS_CONNECT,
                 push: env.GLS_PUSH_CONNECT,
                 mail: env.GLS_MAIL_CONNECT,
                 registration: env.GLS_REGISTRATION_CONNECT,
