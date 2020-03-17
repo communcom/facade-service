@@ -334,6 +334,7 @@ function throwDeprecatedError() {
         code: 400,
         message: 'Method is deprecated',
     };
+    }
 }
 
 module.exports = Connector;
