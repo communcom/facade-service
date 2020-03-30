@@ -98,9 +98,12 @@ class Connector extends BasicConnector {
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
                 'registration.verify': this._proxyTo('registration', 'verify'),
+                'registration.firstStepEmail': this._proxyTo('registration', 'firstStepEmail'),
+                'registration.verifyEmail': this._proxyTo('registration', 'verifyEmail'),
                 'registration.setUsername': this._proxyTo('registration', 'setUsername'),
                 'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
                 'registration.resendSmsCode': this._proxyTo('registration', 'resendSmsCode'),
+                'registration.resendEmailCode': this._proxyTo('registration', 'resendEmailCode'),
                 'registration.onboardingCommunitySubscriptions': this._proxyTo(
                     'registration',
                     'onboardingCommunitySubscriptions'
