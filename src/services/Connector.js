@@ -1,7 +1,6 @@
 const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
-const Options = require('../controllers/Options');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
 const Content = require('../controllers/Content');
@@ -18,7 +17,6 @@ class Connector extends BasicConnector {
 
         const linking = { connector: this };
 
-        this._options = new Options(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
         this._content = new Content(linking);
@@ -40,7 +38,6 @@ class Connector extends BasicConnector {
     }
 
     async start() {
-        const options = this._options;
         const transfer = this._transfer;
         const offline = this._offline;
         const content = this._content;
@@ -52,39 +49,29 @@ class Connector extends BasicConnector {
         await super.start({
             serverRoutes: {
                 'options.get': {
-                    handler: options.get,
-                    scope: options,
+                    handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
                 'options.set': {
-                    handler: options.set,
-                    scope: options,
+                    handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
-                'settings.getNotificationsSettings': {
-                    handler: options.getNotificationsSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.setNotificationsSettings': {
-                    handler: options.setNotificationsSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.getPushSettings': {
-                    handler: options.getPushSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.setPushSettings': {
-                    handler: options.setPushSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
+                'settings.getUserSettings': this._authProxyTo('settings', 'getUserSettings'),
+                'settings.setUserSettings': this._authProxyTo('settings', 'setUserSettings'),
+                'settings.getNotificationsSettings': this._authProxyTo(
+                    'settings',
+                    'getNotificationsSettings'
+                ),
+                'settings.setNotificationsSettings': this._authProxyTo(
+                    'settings',
+                    'setNotificationsSettings'
+                ),
+                'settings.getPushSettings': this._authProxyTo('settings', 'getPushSettings'),
+                'settings.setPushSettings': this._authProxyTo('settings', 'setPushSettings'),
 
-                'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
-                'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),
-                'device.resetFcmToken': this._authProxyTo('options', 'resetFcmToken'),
+                'device.setInfo': this._authProxyTo('settings', 'setDeviceInfo'),
+                'device.setFcmToken': this._authProxyTo('settings', 'setFcmToken'),
+                'device.resetFcmToken': this._authProxyTo('settings', 'resetFcmToken'),
 
                 'notifications.getNotifications': this._authProxyTo(
                     'notifications',
@@ -111,9 +98,12 @@ class Connector extends BasicConnector {
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
                 'registration.verify': this._proxyTo('registration', 'verify'),
+                'registration.firstStepEmail': this._proxyTo('registration', 'firstStepEmail'),
+                'registration.verifyEmail': this._proxyTo('registration', 'verifyEmail'),
                 'registration.setUsername': this._proxyTo('registration', 'setUsername'),
                 'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
                 'registration.resendSmsCode': this._proxyTo('registration', 'resendSmsCode'),
+                'registration.resendEmailCode': this._proxyTo('registration', 'resendEmailCode'),
                 'registration.onboardingCommunitySubscriptions': this._proxyTo(
                     'registration',
                     'onboardingCommunitySubscriptions'
@@ -166,6 +156,7 @@ class Connector extends BasicConnector {
                 'content.getReportsList': content.createCallProxy('getReportsList'),
                 'content.getEntityReports': content.createCallProxy('getEntityReports'),
                 'content.getBanPostProposal': content.createCallProxy('getBanPostProposal'),
+                'content.getReferralUsers': this._authProxyTo('registration', 'getReferralUsers'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
@@ -240,22 +231,35 @@ class Connector extends BasicConnector {
                     // pass clientInfo as params
                     this.callService('config', 'getConfig', clientInfo, auth),
 
-                'exchange.getCurrencies': this._proxyTo('exchange', 'getCurrencies'),
-                'exchange.getCurrenciesFull': this._proxyTo('exchange', 'getCurrenciesFull'),
-                'exchange.getMinMaxAmount': this._proxyTo('exchange', 'getMinMaxAmount'),
-                'exchange.getExchangeAmount': this._proxyTo('exchange', 'getExchangeAmount'),
-                'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
-                'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
-                'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
-                'exchange.getClient': this._proxyTo('exchange', 'getClient'),
-                'exchange.createClient': this._proxyTo('exchange', 'createClient'),
-                'exchange.getOrCreateClient': this._proxyTo('exchange', 'getOrCreateClient'),
-                'exchange.addCard': this._proxyTo('exchange', 'addCard'),
-                'exchange.chargeCard': this._proxyTo('exchange', 'chargeCard'),
-                'exchange.getRates': this._proxyTo('exchange', 'getRates'),
-                'exchange.getCarbonStatus': this._proxyTo('exchange', 'getCarbonStatus'),
+                'exchange.getCurrencies': this._exchangeProxyTo('exchange', 'getCurrencies'),
+                'exchange.getCurrenciesFull': this._exchangeProxyTo(
+                    'exchange',
+                    'getCurrenciesFull'
+                ),
+                'exchange.getMinMaxAmount': this._exchangeProxyTo('exchange', 'getMinMaxAmount'),
+                'exchange.getExchangeAmount': this._exchangeProxyTo(
+                    'exchange',
+                    'getExchangeAmount'
+                ),
+                'exchange.createTransaction': this._exchangeProxyTo(
+                    'exchange',
+                    'createTransaction'
+                ),
+                'exchange.getTransactions': this._exchangeProxyTo('exchange', 'getTransactions'),
+                'exchange.getStatus': this._exchangeProxyTo('exchange', 'getStatus'),
+                'exchange.getClient': this._exchangeProxyTo('exchange', 'getClient'),
+                'exchange.createClient': this._exchangeProxyTo('exchange', 'createClient'),
+                'exchange.getOrCreateClient': this._exchangeProxyTo(
+                    'exchange',
+                    'getOrCreateClient'
+                ),
+                'exchange.addCard': this._exchangeProxyTo('exchange', 'addCard'),
+                'exchange.chargeCard': this._exchangeProxyTo('exchange', 'chargeCard'),
+                'exchange.getRates': this._exchangeProxyTo('exchange', 'getRates'),
+                'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
+                'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
 
                 /* service endpoints */
                 offline: {
@@ -278,7 +282,7 @@ class Connector extends BasicConnector {
                 frontend: env.GLS_FRONTEND_GATE_CONNECT,
                 notifications: env.GLS_NOTIFICATIONS_CONNECT,
                 notificationsSender: env.GLS_NOTIFICATIONS_SENDER_CONNECT,
-                options: env.GLS_OPTIONS_CONNECT,
+                settings: env.GLS_SETTINGS_CONNECT,
                 push: env.GLS_PUSH_CONNECT,
                 mail: env.GLS_MAIL_CONNECT,
                 registration: env.GLS_REGISTRATION_CONNECT,
@@ -295,6 +299,7 @@ class Connector extends BasicConnector {
                 config: env.GLS_CONFIG_CONNECT,
                 exchange: env.GLS_EXCHANGE_CONNECT,
                 rewards: env.GLS_REWARDS_CONNECT,
+                airdrop: env.GLS_AIRDROPS_CONNECT,
             },
         });
     }
@@ -320,6 +325,22 @@ class Connector extends BasicConnector {
             before: [this._checkAuth],
         };
     }
+
+    _exchangeProxyTo(serviceName, methodName) {
+        return async ({ params, auth, clientInfo, meta }) => {
+            return await this.callService(serviceName, methodName, params, auth, {
+                ...clientInfo,
+                ip: meta.clientRequestIp,
+            });
+        };
+    }
+}
+
+function throwDeprecatedError() {
+    throw {
+        code: 400,
+        message: 'Method is deprecated',
+    };
 }
 
 module.exports = Connector;
