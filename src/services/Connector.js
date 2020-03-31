@@ -126,6 +126,10 @@ class Connector extends BasicConnector {
                     'registration',
                     'onboardingSharedLink'
                 ),
+                'registration.appendReferralParent': this._proxyTo(
+                    'registration',
+                    'appendReferralParent'
+                ),
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
                 'rates.getHistorical': this._proxyTo('rates', 'getHistorical'),
