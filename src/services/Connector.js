@@ -215,6 +215,22 @@ class Connector extends BasicConnector {
                     handler: wallet.getPointInfo,
                     scope: wallet,
                 },
+                'wallet.getTransfer': {
+                    handler: wallet.getTransfer,
+                    scope: wallet,
+                },
+                'wallet.waitForTransaction': {
+                    handler: wallet.waitForTransaction,
+                    scope: wallet,
+                },
+                'wallet.getBlockSubscribeStatus': {
+                    handler: wallet.getBlockSubscribeStatus,
+                    scope: wallet,
+                },
+                'wallet.getVersion': {
+                    handler: wallet.getVersion,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
