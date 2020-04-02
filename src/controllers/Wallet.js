@@ -25,6 +25,22 @@ class Wallet extends Basic {
     async getPointInfo({ params }) {
         return await this.callService('wallet', 'getPointInfo', params);
     }
+
+    async getTransfer({ params }) {
+        return await this.callService('wallet', 'getTransfer', params);
+    }
+
+    async waitForTransaction({ params }) {
+        return await this.callService('wallet', 'waitForTransaction', params);
+    }
+
+    async getBlockSubscribeStatus({ params }) {
+        return await this.callService('wallet', 'getBlockSubscribeStatus', params);
+    }
+
+    async getVersion({ params }) {
+        return await this.callService('wallet', 'getVersion', params);
+    }
 }
 
 module.exports = Wallet;
