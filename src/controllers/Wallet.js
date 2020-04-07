@@ -30,8 +30,12 @@ class Wallet extends Basic {
         return await this.callService('wallet', 'getTransfer', params);
     }
 
+    async waitForBlock({ params }) {
+        return await this.callService('walletWriter', 'waitForBlock', params);
+    }
+
     async waitForTransaction({ params }) {
-        return await this.callService('wallet', 'waitForTransaction', params);
+        return await this.callService('walletWriter', 'waitForTransaction', params);
     }
 
     async getBlockSubscribeStatus({ params }) {
