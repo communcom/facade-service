@@ -313,7 +313,7 @@ class Connector extends BasicConnector {
                 meta: env.GLS_META_CONNECT,
                 bandwidth: env.GLS_BANDWIDTH_PROVIDER_CONNECT,
                 wallet: env.GLS_WALLET_CONNECT,
-                walletWriter: GLS_WALLET_WRITER_CONNECT,
+                walletWriter: env.GLS_WALLET_WRITER_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
