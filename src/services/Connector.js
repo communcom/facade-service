@@ -294,6 +294,7 @@ class Connector extends BasicConnector {
                     'community',
                     'getUsersCommunities'
                 ),
+                'community.isExists': this._authProxyTo('community', 'isExists'),
 
                 /* service endpoints */
                 offline: {
