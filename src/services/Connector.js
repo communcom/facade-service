@@ -215,6 +215,26 @@ class Connector extends BasicConnector {
                     handler: wallet.getPointInfo,
                     scope: wallet,
                 },
+                'wallet.getTransfer': {
+                    handler: wallet.getTransfer,
+                    scope: wallet,
+                },
+                'wallet.waitForBlock': {
+                    handler: wallet.waitForBlock,
+                    scope: wallet,
+                },
+                'wallet.waitForTransaction': {
+                    handler: wallet.waitForTransaction,
+                    scope: wallet,
+                },
+                'wallet.getBlockSubscribeStatus': {
+                    handler: wallet.getBlockSubscribeStatus,
+                    scope: wallet,
+                },
+                'wallet.getVersion': {
+                    handler: wallet.getVersion,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
@@ -259,7 +279,22 @@ class Connector extends BasicConnector {
                 'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
-                'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
+                'airdrop.getAirdrop': this._authProxyTo('community', 'getAirdrop'),
+                'community.createNewCommunity': this._authProxyTo(
+                    'community',
+                    'createNewCommunity'
+                ),
+                'community.getCommunity': this._authProxyTo('community', 'getCommunity'),
+                'community.setSettings': this._authProxyTo('community', 'setSettings'),
+                'community.startCommunityCreation': this._authProxyTo(
+                    'community',
+                    'startCommunityCreation'
+                ),
+                'community.getUsersCommunities': this._authProxyTo(
+                    'community',
+                    'getUsersCommunities'
+                ),
+                'community.isExists': this._authProxyTo('community', 'isExists'),
 
                 /* service endpoints */
                 offline: {
@@ -293,6 +328,7 @@ class Connector extends BasicConnector {
                 meta: env.GLS_META_CONNECT,
                 bandwidth: env.GLS_BANDWIDTH_PROVIDER_CONNECT,
                 wallet: env.GLS_WALLET_CONNECT,
+                walletWriter: env.GLS_WALLET_WRITER_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
@@ -300,6 +336,7 @@ class Connector extends BasicConnector {
                 exchange: env.GLS_EXCHANGE_CONNECT,
                 rewards: env.GLS_REWARDS_CONNECT,
                 airdrop: env.GLS_AIRDROPS_CONNECT,
+                community: env.GLS_COMMUNITY_SERVICE_CONNECT,
             },
         });
     }
