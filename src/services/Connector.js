@@ -56,7 +56,7 @@ class Connector extends BasicConnector {
                     handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
-                'settings.getUserSettings': this._authProxyTo('settings', 'getUserSettings'),
+                'settings.getUserSettings': this._proxyTo('settings', 'getUserSettings'),
                 'settings.setUserSettings': this._authProxyTo('settings', 'setUserSettings'),
                 'settings.getNotificationsSettings': this._authProxyTo(
                     'settings',
