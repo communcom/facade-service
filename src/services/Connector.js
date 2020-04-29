@@ -236,6 +236,10 @@ class Connector extends BasicConnector {
                     handler: wallet.getVersion,
                     scope: wallet,
                 },
+                'wallet.getDonations': {
+                    handler: wallet.getDonations,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
