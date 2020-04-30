@@ -278,6 +278,8 @@ class Connector extends BasicConnector {
                 'exchange.chargeCard': this._exchangeProxyTo('exchange', 'chargeCard'),
                 'exchange.getRates': this._exchangeProxyTo('exchange', 'getRates'),
                 'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
+                'exchange.payMirExchange': this._exchangeProxyTo('exchange', 'payMirExchange'),
+                'exchange.payMirCalculate': this._exchangeProxyTo('exchange', 'payMirCalculate'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
                 'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
