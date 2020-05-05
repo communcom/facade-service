@@ -236,6 +236,14 @@ class Connector extends BasicConnector {
                     handler: wallet.getVersion,
                     scope: wallet,
                 },
+                'wallet.getDonations': {
+                    handler: wallet.getDonations,
+                    scope: wallet,
+                },
+                'wallet.getDonationsBulk': {
+                    handler: wallet.getDonationsBulk,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
@@ -280,7 +288,7 @@ class Connector extends BasicConnector {
                 'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
-                'airdrop.getAirdrop': this._authProxyTo('community', 'getAirdrop'),
+                'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
                 'community.createNewCommunity': this._authProxyTo(
                     'community',
                     'createNewCommunity'
