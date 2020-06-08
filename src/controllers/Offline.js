@@ -17,10 +17,6 @@ class Offline extends Basic {
 
         return { status: 'Ok' };
     }
-
-    async signOut({}, auth, clientInfo) {
-        return this.callService('settings', 'resetFcmToken', {}, auth, clientInfo);
-    }
 }
 
 module.exports = Offline;
