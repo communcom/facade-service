@@ -304,6 +304,10 @@ class Connector extends BasicConnector {
                     'getUsersCommunities'
                 ),
                 'community.isExists': this._authProxyTo('community', 'isExists'),
+                'auth.signOut': {
+                    handler: offline.signOut,
+                    scope: offline,
+                },
 
                 /* service endpoints */
                 offline: {
