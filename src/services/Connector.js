@@ -304,7 +304,7 @@ class Connector extends BasicConnector {
                     'getUsersCommunities'
                 ),
                 'community.isExists': this._authProxyTo('community', 'isExists'),
-                'auth.signOut': this._authProxyTo('settings', 'removeFcmToken'),
+                'auth.signOut': this._authProxyTo('settings', 'resetFcmToken'),
 
                 /* service endpoints */
                 offline: {
