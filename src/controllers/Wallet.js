@@ -53,6 +53,10 @@ class Wallet extends Basic {
     async getDonationsBulk({ params }) {
         return await this.callService('wallet', 'getDonationsBulk', params);
     }
+
+    async getPointsPrices({ params }) {
+        return await this.callService('wallet', 'getPointsPrices', params);
+    }
 }
 
 module.exports = Wallet;
