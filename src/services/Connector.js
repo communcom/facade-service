@@ -236,6 +236,18 @@ class Connector extends BasicConnector {
                     handler: wallet.getVersion,
                     scope: wallet,
                 },
+                'wallet.getDonations': {
+                    handler: wallet.getDonations,
+                    scope: wallet,
+                },
+                'wallet.getDonationsBulk': {
+                    handler: wallet.getDonationsBulk,
+                    scope: wallet,
+                },
+                'wallet.getPointsPrices': {
+                    handler: wallet.getPointsPrices,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
@@ -299,7 +311,9 @@ class Connector extends BasicConnector {
                     'getUsersCommunities'
                 ),
                 'community.isExists': this._authProxyTo('community', 'isExists'),
+                'auth.signOut': this._authProxyTo('settings', 'resetFcmToken'),
 
+                'auth.getPublicKeys': this._proxyTo('auth', 'auth.getPublicKeys'),
                 /* service endpoints */
                 offline: {
                     handler: offline.handle,
@@ -341,6 +355,7 @@ class Connector extends BasicConnector {
                 rewards: env.GLS_REWARDS_CONNECT,
                 airdrop: env.GLS_AIRDROPS_CONNECT,
                 community: env.GLS_COMMUNITY_SERVICE_CONNECT,
+                auth: env.GLS_AUTH_SERVICE_CONNECT,
             },
         });
     }
