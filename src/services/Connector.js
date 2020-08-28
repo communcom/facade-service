@@ -10,12 +10,12 @@ const Wallet = require('../controllers/Wallet');
 const Healthcheck = require('../controllers/Healthcheck');
 
 class Connector extends BasicConnector {
-    constructor({ healthcheckService }) {
+    constructor({ healthcheckService, tracer }) {
         super();
 
         this._checkAuth = this._checkAuth.bind(this);
 
-        const linking = { connector: this };
+        const linking = { connector: this, tracer };
 
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
@@ -24,6 +24,8 @@ class Connector extends BasicConnector {
         this._bandwidth = new Bandwidth(linking);
         this._wallet = new Wallet(linking);
         this._healthcheck = new Healthcheck({ ...linking, healthcheckService });
+
+        this._tracer = tracer;
     }
 
     _checkAuth(params) {
@@ -260,9 +262,7 @@ class Connector extends BasicConnector {
                 'geoip.lookup': ({ meta }) =>
                     this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
-                'config.getConfig': ({ auth, clientInfo }) =>
-                    // pass clientInfo as params
-                    this.callService('config', 'getConfig', clientInfo, auth),
+                'config.getConfig': this._proxyTo('config', 'getConfig'),
 
                 'exchange.getCurrencies': this._exchangeProxyTo('exchange', 'getCurrencies'),
                 'exchange.getCurrenciesFull': this._exchangeProxyTo(
@@ -389,6 +389,56 @@ class Connector extends BasicConnector {
                 ip: meta.clientRequestIp,
             });
         };
+    }
+
+    async callService(serviceName, methodName, params, auth, clientInfo) {
+        let childOf;
+        const tags = {
+            'peer.service': 'facade',
+            'service.name': serviceName,
+            'method.name': methodName,
+            'method.params': JSON.stringify(params),
+        };
+
+        if (clientInfo) {
+            if (clientInfo.carrier) {
+                childOf = this._tracer.extract('text_map', clientInfo.carrier);
+            }
+
+            const { platform, clientType } = clientInfo;
+            tags['client.platform'] = platform;
+            tags['clien.type'] = clientType;
+        }
+
+        const facadeSpan = this._tracer.startSpan(`call_service::${serviceName}.${methodName}`, {
+            childOf,
+            tags,
+        });
+
+        const facadeCarrier = {};
+        this._tracer.inject(facadeSpan, 'text_map', facadeCarrier);
+
+        if (clientInfo && clientInfo.carrier) {
+            clientInfo.carrier = facadeCarrier;
+        }
+
+        try {
+            const result = await super.callService(
+                serviceName,
+                methodName,
+                params,
+                auth,
+                clientInfo
+            );
+
+            facadeSpan.finish();
+
+            return result;
+        } catch (err) {
+            facadeSpan.finish();
+
+            throw err;
+        }
     }
 }
 
