@@ -10,12 +10,12 @@ const Wallet = require('../controllers/Wallet');
 const Healthcheck = require('../controllers/Healthcheck');
 
 class Connector extends BasicConnector {
-    constructor({ healthcheckService }) {
+    constructor({ healthcheckService, tracer }) {
         super();
 
         this._checkAuth = this._checkAuth.bind(this);
 
-        const linking = { connector: this };
+        const linking = { connector: this, tracer };
 
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
@@ -24,6 +24,8 @@ class Connector extends BasicConnector {
         this._bandwidth = new Bandwidth(linking);
         this._wallet = new Wallet(linking);
         this._healthcheck = new Healthcheck({ ...linking, healthcheckService });
+
+        this._tracer = tracer;
     }
 
     _checkAuth(params) {
@@ -56,7 +58,7 @@ class Connector extends BasicConnector {
                     handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
-                'settings.getUserSettings': this._authProxyTo('settings', 'getUserSettings'),
+                'settings.getUserSettings': this._proxyTo('settings', 'getUserSettings'),
                 'settings.setUserSettings': this._authProxyTo('settings', 'setUserSettings'),
                 'settings.getNotificationsSettings': this._authProxyTo(
                     'settings',
@@ -134,6 +136,7 @@ class Connector extends BasicConnector {
                 'content.getChargers': content.createCallProxy('getChargers'),
                 'content.getLeaders': content.createCallProxy('getLeaders'),
                 'content.getLeaderCommunities': content.createCallProxy('getLeaderCommunities'),
+                'content.getVotedLeader': content.createCallProxy('getVotedLeader'),
                 'content.getHashTagTop': content.createCallProxy('getHashTagTop'),
                 'content.waitForBlock': content.createCallProxy('waitForBlock'),
                 'content.waitForTransaction': content.createCallProxy('waitForTransaction'),
@@ -219,6 +222,10 @@ class Connector extends BasicConnector {
                     handler: wallet.getTransfer,
                     scope: wallet,
                 },
+                'wallet.waitForBlock': {
+                    handler: wallet.waitForBlock,
+                    scope: wallet,
+                },
                 'wallet.waitForTransaction': {
                     handler: wallet.waitForTransaction,
                     scope: wallet,
@@ -229,6 +236,18 @@ class Connector extends BasicConnector {
                 },
                 'wallet.getVersion': {
                     handler: wallet.getVersion,
+                    scope: wallet,
+                },
+                'wallet.getDonations': {
+                    handler: wallet.getDonations,
+                    scope: wallet,
+                },
+                'wallet.getDonationsBulk': {
+                    handler: wallet.getDonationsBulk,
+                    scope: wallet,
+                },
+                'wallet.getPointsPrices': {
+                    handler: wallet.getPointsPrices,
                     scope: wallet,
                 },
 
@@ -243,9 +262,7 @@ class Connector extends BasicConnector {
                 'geoip.lookup': ({ meta }) =>
                     this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
-                'config.getConfig': ({ auth, clientInfo }) =>
-                    // pass clientInfo as params
-                    this.callService('config', 'getConfig', clientInfo, auth),
+                'config.getConfig': this._proxyTo('config', 'getConfig'),
 
                 'exchange.getCurrencies': this._exchangeProxyTo('exchange', 'getCurrencies'),
                 'exchange.getCurrenciesFull': this._exchangeProxyTo(
@@ -273,10 +290,30 @@ class Connector extends BasicConnector {
                 'exchange.chargeCard': this._exchangeProxyTo('exchange', 'chargeCard'),
                 'exchange.getRates': this._exchangeProxyTo('exchange', 'getRates'),
                 'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
+                'exchange.payMirExchange': this._exchangeProxyTo('exchange', 'payMirExchange'),
+                'exchange.payMirCalculate': this._exchangeProxyTo('exchange', 'payMirCalculate'),
+                'exchange.payMirGetHistory': this._exchangeProxyTo('exchange', 'payMirGetHistory'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
                 'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
+                'community.createNewCommunity': this._authProxyTo(
+                    'community',
+                    'createNewCommunity'
+                ),
+                'community.getCommunity': this._authProxyTo('community', 'getCommunity'),
+                'community.setSettings': this._authProxyTo('community', 'setSettings'),
+                'community.startCommunityCreation': this._authProxyTo(
+                    'community',
+                    'startCommunityCreation'
+                ),
+                'community.getUsersCommunities': this._authProxyTo(
+                    'community',
+                    'getUsersCommunities'
+                ),
+                'community.isExists': this._authProxyTo('community', 'isExists'),
+                'auth.signOut': this._authProxyTo('settings', 'resetFcmToken'),
 
+                'auth.getPublicKeys': this._proxyTo('auth', 'auth.getPublicKeys'),
                 /* service endpoints */
                 offline: {
                     handler: offline.handle,
@@ -309,6 +346,7 @@ class Connector extends BasicConnector {
                 meta: env.GLS_META_CONNECT,
                 bandwidth: env.GLS_BANDWIDTH_PROVIDER_CONNECT,
                 wallet: env.GLS_WALLET_CONNECT,
+                walletWriter: env.GLS_WALLET_WRITER_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
@@ -316,6 +354,8 @@ class Connector extends BasicConnector {
                 exchange: env.GLS_EXCHANGE_CONNECT,
                 rewards: env.GLS_REWARDS_CONNECT,
                 airdrop: env.GLS_AIRDROPS_CONNECT,
+                community: env.GLS_COMMUNITY_SERVICE_CONNECT,
+                auth: env.GLS_AUTH_SERVICE_CONNECT,
             },
         });
     }
@@ -349,6 +389,56 @@ class Connector extends BasicConnector {
                 ip: meta.clientRequestIp,
             });
         };
+    }
+
+    async callService(serviceName, methodName, params, auth, clientInfo) {
+        let childOf;
+        const tags = {
+            'peer.service': 'facade',
+            'service.name': serviceName,
+            'method.name': methodName,
+            'method.params': JSON.stringify(params),
+        };
+
+        if (clientInfo) {
+            if (clientInfo.carrier) {
+                childOf = this._tracer.extract('text_map', clientInfo.carrier);
+            }
+
+            const { platform, clientType } = clientInfo;
+            tags['client.platform'] = platform;
+            tags['clien.type'] = clientType;
+        }
+
+        const facadeSpan = this._tracer.startSpan(`call_service::${serviceName}.${methodName}`, {
+            childOf,
+            tags,
+        });
+
+        const facadeCarrier = {};
+        this._tracer.inject(facadeSpan, 'text_map', facadeCarrier);
+
+        if (clientInfo && clientInfo.carrier) {
+            clientInfo.carrier = facadeCarrier;
+        }
+
+        try {
+            const result = await super.callService(
+                serviceName,
+                methodName,
+                params,
+                auth,
+                clientInfo
+            );
+
+            facadeSpan.finish();
+
+            return result;
+        } catch (err) {
+            facadeSpan.finish();
+
+            throw err;
+        }
     }
 }
 
