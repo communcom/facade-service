@@ -1,7 +1,6 @@
 const core = require('cyberway-core-service');
 const BasicConnector = core.services.Connector;
 const env = require('../data/env');
-const Options = require('../controllers/Options');
 const Transfer = require('../controllers/Transfer');
 const Offline = require('../controllers/Offline');
 const Content = require('../controllers/Content');
@@ -11,14 +10,13 @@ const Wallet = require('../controllers/Wallet');
 const Healthcheck = require('../controllers/Healthcheck');
 
 class Connector extends BasicConnector {
-    constructor({ healthcheckService }) {
+    constructor({ healthcheckService, tracer }) {
         super();
 
         this._checkAuth = this._checkAuth.bind(this);
 
-        const linking = { connector: this };
+        const linking = { connector: this, tracer };
 
-        this._options = new Options(linking);
         this._transfer = new Transfer(linking);
         this._offline = new Offline(linking);
         this._content = new Content(linking);
@@ -26,6 +24,8 @@ class Connector extends BasicConnector {
         this._bandwidth = new Bandwidth(linking);
         this._wallet = new Wallet(linking);
         this._healthcheck = new Healthcheck({ ...linking, healthcheckService });
+
+        this._tracer = tracer;
     }
 
     _checkAuth(params) {
@@ -40,7 +40,6 @@ class Connector extends BasicConnector {
     }
 
     async start() {
-        const options = this._options;
         const transfer = this._transfer;
         const offline = this._offline;
         const content = this._content;
@@ -52,39 +51,29 @@ class Connector extends BasicConnector {
         await super.start({
             serverRoutes: {
                 'options.get': {
-                    handler: options.get,
-                    scope: options,
+                    handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
                 'options.set': {
-                    handler: options.set,
-                    scope: options,
+                    handler: throwDeprecatedError,
                     before: [this._checkAuth],
                 },
-                'settings.getNotificationsSettings': {
-                    handler: options.getNotificationsSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.setNotificationsSettings': {
-                    handler: options.setNotificationsSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.getPushSettings': {
-                    handler: options.getPushSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
-                'settings.setPushSettings': {
-                    handler: options.setPushSettings,
-                    scope: options,
-                    before: [this._checkAuth],
-                },
+                'settings.getUserSettings': this._proxyTo('settings', 'getUserSettings'),
+                'settings.setUserSettings': this._authProxyTo('settings', 'setUserSettings'),
+                'settings.getNotificationsSettings': this._authProxyTo(
+                    'settings',
+                    'getNotificationsSettings'
+                ),
+                'settings.setNotificationsSettings': this._authProxyTo(
+                    'settings',
+                    'setNotificationsSettings'
+                ),
+                'settings.getPushSettings': this._authProxyTo('settings', 'getPushSettings'),
+                'settings.setPushSettings': this._authProxyTo('settings', 'setPushSettings'),
 
-                'device.setInfo': this._authProxyTo('options', 'setDeviceInfo'),
-                'device.setFcmToken': this._authProxyTo('options', 'setFcmToken'),
-                'device.resetFcmToken': this._authProxyTo('options', 'resetFcmToken'),
+                'device.setInfo': this._authProxyTo('settings', 'setDeviceInfo'),
+                'device.setFcmToken': this._authProxyTo('settings', 'setFcmToken'),
+                'device.resetFcmToken': this._authProxyTo('settings', 'resetFcmToken'),
 
                 'notifications.getNotifications': this._authProxyTo(
                     'notifications',
@@ -111,9 +100,12 @@ class Connector extends BasicConnector {
                 'registration.getState': this._proxyTo('registration', 'getState'),
                 'registration.firstStep': this._proxyTo('registration', 'firstStep'),
                 'registration.verify': this._proxyTo('registration', 'verify'),
+                'registration.firstStepEmail': this._proxyTo('registration', 'firstStepEmail'),
+                'registration.verifyEmail': this._proxyTo('registration', 'verifyEmail'),
                 'registration.setUsername': this._proxyTo('registration', 'setUsername'),
                 'registration.toBlockChain': this._proxyTo('registration', 'toBlockChain'),
                 'registration.resendSmsCode': this._proxyTo('registration', 'resendSmsCode'),
+                'registration.resendEmailCode': this._proxyTo('registration', 'resendEmailCode'),
                 'registration.onboardingCommunitySubscriptions': this._proxyTo(
                     'registration',
                     'onboardingCommunitySubscriptions'
@@ -125,6 +117,10 @@ class Connector extends BasicConnector {
                 'registration.onboardingSharedLink': this._proxyTo(
                     'registration',
                     'onboardingSharedLink'
+                ),
+                'registration.appendReferralParent': this._proxyTo(
+                    'registration',
+                    'appendReferralParent'
                 ),
 
                 'rates.getActual': this._proxyTo('rates', 'getActual'),
@@ -140,6 +136,7 @@ class Connector extends BasicConnector {
                 'content.getChargers': content.createCallProxy('getChargers'),
                 'content.getLeaders': content.createCallProxy('getLeaders'),
                 'content.getLeaderCommunities': content.createCallProxy('getLeaderCommunities'),
+                'content.getVotedLeader': content.createCallProxy('getVotedLeader'),
                 'content.getHashTagTop': content.createCallProxy('getHashTagTop'),
                 'content.waitForBlock': content.createCallProxy('waitForBlock'),
                 'content.waitForTransaction': content.createCallProxy('waitForTransaction'),
@@ -163,6 +160,7 @@ class Connector extends BasicConnector {
                 'content.getEntityReports': content.createCallProxy('getEntityReports'),
                 'content.getBanPostProposal': content.createCallProxy('getBanPostProposal'),
                 'content.getTrendingTags': content.createCallProxy('getTrendingTags'),
+                'content.getReferralUsers': this._authProxyTo('registration', 'getReferralUsers'),
 
                 'meta.getPostsViewCount': {
                     handler: meta.getPostsViewCount,
@@ -221,6 +219,38 @@ class Connector extends BasicConnector {
                     handler: wallet.getPointInfo,
                     scope: wallet,
                 },
+                'wallet.getTransfer': {
+                    handler: wallet.getTransfer,
+                    scope: wallet,
+                },
+                'wallet.waitForBlock': {
+                    handler: wallet.waitForBlock,
+                    scope: wallet,
+                },
+                'wallet.waitForTransaction': {
+                    handler: wallet.waitForTransaction,
+                    scope: wallet,
+                },
+                'wallet.getBlockSubscribeStatus': {
+                    handler: wallet.getBlockSubscribeStatus,
+                    scope: wallet,
+                },
+                'wallet.getVersion': {
+                    handler: wallet.getVersion,
+                    scope: wallet,
+                },
+                'wallet.getDonations': {
+                    handler: wallet.getDonations,
+                    scope: wallet,
+                },
+                'wallet.getDonationsBulk': {
+                    handler: wallet.getDonationsBulk,
+                    scope: wallet,
+                },
+                'wallet.getPointsPrices': {
+                    handler: wallet.getPointsPrices,
+                    scope: wallet,
+                },
 
                 'frame.getEmbed': this._proxyTo('embedsCache', 'getEmbed'),
 
@@ -233,27 +263,58 @@ class Connector extends BasicConnector {
                 'geoip.lookup': ({ meta }) =>
                     this.callService('geoip', 'lookup', { ip: meta.clientRequestIp }),
 
-                'config.getConfig': ({ auth, clientInfo }) =>
-                    // pass clientInfo as params
-                    this.callService('config', 'getConfig', clientInfo, auth),
+                'config.getConfig': this._proxyTo('config', 'getConfig'),
 
-                'exchange.getCurrencies': this._proxyTo('exchange', 'getCurrencies'),
-                'exchange.getCurrenciesFull': this._proxyTo('exchange', 'getCurrenciesFull'),
-                'exchange.getMinMaxAmount': this._proxyTo('exchange', 'getMinMaxAmount'),
-                'exchange.getExchangeAmount': this._proxyTo('exchange', 'getExchangeAmount'),
-                'exchange.createTransaction': this._proxyTo('exchange', 'createTransaction'),
-                'exchange.getTransactions': this._proxyTo('exchange', 'getTransactions'),
-                'exchange.getStatus': this._proxyTo('exchange', 'getStatus'),
-                'exchange.getClient': this._proxyTo('exchange', 'getClient'),
-                'exchange.createClient': this._proxyTo('exchange', 'createClient'),
-                'exchange.getOrCreateClient': this._proxyTo('exchange', 'getOrCreateClient'),
-                'exchange.addCard': this._proxyTo('exchange', 'addCard'),
-                'exchange.chargeCard': this._proxyTo('exchange', 'chargeCard'),
-                'exchange.getRates': this._proxyTo('exchange', 'getRates'),
-                'exchange.getCarbonStatus': this._proxyTo('exchange', 'getCarbonStatus'),
+                'exchange.getCurrencies': this._exchangeProxyTo('exchange', 'getCurrencies'),
+                'exchange.getCurrenciesFull': this._exchangeProxyTo(
+                    'exchange',
+                    'getCurrenciesFull'
+                ),
+                'exchange.getMinMaxAmount': this._exchangeProxyTo('exchange', 'getMinMaxAmount'),
+                'exchange.getExchangeAmount': this._exchangeProxyTo(
+                    'exchange',
+                    'getExchangeAmount'
+                ),
+                'exchange.createTransaction': this._exchangeProxyTo(
+                    'exchange',
+                    'createTransaction'
+                ),
+                'exchange.getTransactions': this._exchangeProxyTo('exchange', 'getTransactions'),
+                'exchange.getStatus': this._exchangeProxyTo('exchange', 'getStatus'),
+                'exchange.getClient': this._exchangeProxyTo('exchange', 'getClient'),
+                'exchange.createClient': this._exchangeProxyTo('exchange', 'createClient'),
+                'exchange.getOrCreateClient': this._exchangeProxyTo(
+                    'exchange',
+                    'getOrCreateClient'
+                ),
+                'exchange.addCard': this._exchangeProxyTo('exchange', 'addCard'),
+                'exchange.chargeCard': this._exchangeProxyTo('exchange', 'chargeCard'),
+                'exchange.getRates': this._exchangeProxyTo('exchange', 'getRates'),
+                'exchange.getCarbonStatus': this._exchangeProxyTo('exchange', 'getCarbonStatus'),
+                'exchange.payMirExchange': this._exchangeProxyTo('exchange', 'payMirExchange'),
+                'exchange.payMirCalculate': this._exchangeProxyTo('exchange', 'payMirCalculate'),
+                'exchange.payMirGetHistory': this._exchangeProxyTo('exchange', 'payMirGetHistory'),
                 'rewards.getState': this._proxyTo('rewards', 'getState'),
                 'rewards.getStateBulk': this._proxyTo('rewards', 'getStateBulk'),
+                'airdrop.getAirdrop': this._authProxyTo('airdrop', 'getAirdrop'),
+                'community.createNewCommunity': this._authProxyTo(
+                    'community',
+                    'createNewCommunity'
+                ),
+                'community.getCommunity': this._authProxyTo('community', 'getCommunity'),
+                'community.setSettings': this._authProxyTo('community', 'setSettings'),
+                'community.startCommunityCreation': this._authProxyTo(
+                    'community',
+                    'startCommunityCreation'
+                ),
+                'community.getUsersCommunities': this._authProxyTo(
+                    'community',
+                    'getUsersCommunities'
+                ),
+                'community.isExists': this._authProxyTo('community', 'isExists'),
+                'auth.signOut': this._authProxyTo('settings', 'resetFcmToken'),
 
+                'auth.getPublicKeys': this._proxyTo('auth', 'auth.getPublicKeys'),
                 /* service endpoints */
                 offline: {
                     handler: offline.handle,
@@ -275,7 +336,7 @@ class Connector extends BasicConnector {
                 frontend: env.GLS_FRONTEND_GATE_CONNECT,
                 notifications: env.GLS_NOTIFICATIONS_CONNECT,
                 notificationsSender: env.GLS_NOTIFICATIONS_SENDER_CONNECT,
-                options: env.GLS_OPTIONS_CONNECT,
+                settings: env.GLS_SETTINGS_CONNECT,
                 push: env.GLS_PUSH_CONNECT,
                 mail: env.GLS_MAIL_CONNECT,
                 registration: env.GLS_REGISTRATION_CONNECT,
@@ -286,12 +347,16 @@ class Connector extends BasicConnector {
                 meta: env.GLS_META_CONNECT,
                 bandwidth: env.GLS_BANDWIDTH_PROVIDER_CONNECT,
                 wallet: env.GLS_WALLET_CONNECT,
+                walletWriter: env.GLS_WALLET_WRITER_CONNECT,
                 stateReader: env.GLS_STATE_READER_CONNECT,
                 geoip: env.GLS_GEOIP_CONNECT,
                 embedsCache: env.GLS_EMBEDS_CACHE_CONNECT,
                 config: env.GLS_CONFIG_CONNECT,
                 exchange: env.GLS_EXCHANGE_CONNECT,
                 rewards: env.GLS_REWARDS_CONNECT,
+                airdrop: env.GLS_AIRDROPS_CONNECT,
+                community: env.GLS_COMMUNITY_SERVICE_CONNECT,
+                auth: env.GLS_AUTH_SERVICE_CONNECT,
             },
         });
     }
@@ -317,6 +382,72 @@ class Connector extends BasicConnector {
             before: [this._checkAuth],
         };
     }
+
+    _exchangeProxyTo(serviceName, methodName) {
+        return async ({ params, auth, clientInfo, meta }) => {
+            return await this.callService(serviceName, methodName, params, auth, {
+                ...clientInfo,
+                ip: meta.clientRequestIp,
+            });
+        };
+    }
+
+    async callService(serviceName, methodName, params, auth, clientInfo) {
+        let childOf;
+        const tags = {
+            'peer.service': 'facade',
+            'service.name': serviceName,
+            'method.name': methodName,
+            'method.params': JSON.stringify(params),
+        };
+
+        if (clientInfo) {
+            if (clientInfo.carrier) {
+                childOf = this._tracer.extract('text_map', clientInfo.carrier);
+            }
+
+            const { platform, clientType } = clientInfo;
+            tags['client.platform'] = platform;
+            tags['clien.type'] = clientType;
+        }
+
+        const facadeSpan = this._tracer.startSpan(`call_service::${serviceName}.${methodName}`, {
+            childOf,
+            tags,
+        });
+
+        const facadeCarrier = {};
+        this._tracer.inject(facadeSpan, 'text_map', facadeCarrier);
+
+        if (clientInfo && clientInfo.carrier) {
+            clientInfo.carrier = facadeCarrier;
+        }
+
+        try {
+            const result = await super.callService(
+                serviceName,
+                methodName,
+                params,
+                auth,
+                clientInfo
+            );
+
+            facadeSpan.finish();
+
+            return result;
+        } catch (err) {
+            facadeSpan.finish();
+
+            throw err;
+        }
+    }
+}
+
+function throwDeprecatedError() {
+    throw {
+        code: 400,
+        message: 'Method is deprecated',
+    };
 }
 
 module.exports = Connector;
