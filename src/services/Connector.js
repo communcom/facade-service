@@ -156,6 +156,7 @@ class Connector extends BasicConnector {
                 'content.getCommunity': content.createCallProxy('getCommunity'),
                 'content.getCommunities': content.createCallProxy('getCommunities'),
                 'content.getBlacklist': content.createCallProxy('getBlacklist'),
+                'content.getCommunityBlacklist': content.createCallProxy('getCommunityBlacklist'),
                 'content.getReportsList': content.createCallProxy('getReportsList'),
                 'content.getEntityReports': content.createCallProxy('getEntityReports'),
                 'content.getBanPostProposal': content.createCallProxy('getBanPostProposal'),
