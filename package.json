@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node src/index.js"
   },
-  "author": "golos.io",
-  "license": "GPL-3.0",
+  "author": "Commun.com",
+  "license": "MIT",
   "dependencies": {
     "cyberway-core-service": "^3.55.6",
     "dotenv": "^8.2.0",
